@@ -17,10 +17,14 @@ public class UserConnection {
             conn = new ConnectionFactory().getConnection();
             
             try {
+                
                 String sql = "SELECT * FROM cadastro WHERE login = ? AND senha = ?";
+                                          
                 PreparedStatement ps = conn.prepareStatement(sql);
+                
                 ps.setString(1, usuario.getLogin());   
                 ps.setString(2, usuario.getSenha());   
+                
                 
                 ResultSet rs = ps.executeQuery();
                 return rs;

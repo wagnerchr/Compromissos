@@ -29,7 +29,6 @@ import javax.swing.JTextField;
  */
 public class Cadastro extends javax.swing.JFrame {
 
-    static ArrayList<JTextField> campos = new ArrayList<>();
     //public static Connection conn;
     
     public Cadastro() {
@@ -39,7 +38,7 @@ public class Cadastro extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         
     // PlaceHolders 
-        campos.addAll(Arrays.asList(
+        ArrayList<JTextField> campos = new ArrayList<>(Arrays.asList(
                 textNome,
                 textLogin,
                 textData_nasc,
@@ -301,22 +300,18 @@ public class Cadastro extends javax.swing.JFrame {
             String senhaConfirmHash = hash.hashSenha(senhaConfirm);
 
             // CONFIRMA SENHAS IGUAIS
-            if (!senhaHash.equals(senhaConfirmHash)) {
-                System.out.println("Senhas diferentes >:(");
-                JOptionPane.showMessageDialog(null, "As senhas devem ser iguais!");
-                System.out.println();
-            } else if (senha.equals(senhaConfirm)) {
-
-                System.out.println("Senhas Iguais!");
+            if (!senhaHash.equals(senhaConfirmHash)) {             
+               JOptionPane.showMessageDialog(null, "As senhas devem ser iguais!");
+            } else if (senha.equals(senhaConfirm)) {        
                 Usuario usuario = new Usuario(nome, login, data_nasc, endereco, telefone, email, senha, senhaConfirm);
 
                 // ADICIONAR AO MYSQL
                 InsereUsuarioBanco(usuario);
-            }
-            
-            new Login().setVisible(true);
-            this.setVisible(false);
-
+                
+                // Fecha Janela
+                new Login().setVisible(true);
+                this.setVisible(false);
+            }                     
         } catch (Exception e) {
             System.out.println(e);
         }

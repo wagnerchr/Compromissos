@@ -4,6 +4,11 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/Pichau/Documents/NetBeansProjects/Compromissos2/src/view/Login.java</file>
+            <file>file:/C:/Users/Pichau/Documents/NetBeansProjects/Compromissos2/src/compromissos2/UserConnection.java</file>
+            <file>file:/C:/Users/Pichau/Documents/NetBeansProjects/Compromissos2/src/compromissos2/Usuario.java</file>
+            <file>file:/C:/Users/Pichau/Documents/NetBeansProjects/Compromissos2/src/view/Cadastro.java</file>
+            <file>file:/C:/Users/Pichau/Documents/NetBeansProjects/Compromissos2/src/view/Home.java</file>
+            <file>file:/C:/Users/Pichau/Documents/NetBeansProjects/Compromissos2/src/compromissos2/ConnectionFactory.java</file>
         </group>
     </open-files>
 </project-private>

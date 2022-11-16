@@ -12,17 +12,16 @@ import compromissos2.Usuario;
  */
 public class Home extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Home
-     * 
-     */
-    Usuario usuario;
+    static Usuario usuario;
     
     public Home(Usuario usuario) {
+        
         initComponents();
+        
         this.usuario = usuario;
         this.setLocationRelativeTo(null);
         
+        System.out.println("BEM VINDO! " + usuario.getNome());
         
         labelHello.setText("Hello, " + usuario.getLogin() );
     }
@@ -100,7 +99,7 @@ public class Home extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Home(Usuario usuario).setVisible(true);
+                new Home(usuario).setVisible(true);
             }
         });
     }

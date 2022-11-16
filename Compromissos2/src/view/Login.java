@@ -3,19 +3,20 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package view;
+import com.mysql.jdbc.PreparedStatement;
 import compromissos2.UserConnection;
 import compromissos2.Usuario;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import javax.swing.JOptionPane;
 import java.sql.ResultSet;
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
+import java.util.Date;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import static java.time.temporal.TemporalQueries.localDate;
+
+
 
 /**
  *
@@ -54,6 +55,7 @@ public class Login extends javax.swing.JFrame {
     private void initComponents() {
 
         jMenuItem1 = new javax.swing.JMenuItem();
+        jToggleButton1 = new javax.swing.JToggleButton();
         loginFundo = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         textLogin = new javax.swing.JTextField();
@@ -68,6 +70,8 @@ public class Login extends javax.swing.JFrame {
         icon2 = new javax.swing.JLabel();
 
         jMenuItem1.setText("jMenuItem1");
+
+        jToggleButton1.setText("jToggleButton1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -164,22 +168,44 @@ public class Login extends javax.swing.JFrame {
 
     private void buttonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonLoginActionPerformed
         try {
-
+            
             String login, senha;
+            
+            
             login = textLogin.getText();
             senha = textSenha.getText();
             
             Usuario usuario = new Usuario(login, senha);
-          
+               
             UserConnection connection = new UserConnection();
+            
             ResultSet rs = connection.autenticacao(usuario); 
             
+            // Conexão parâmetros batem
             if(rs.next()) {
-                // Abre tela
-                new Home(usuario).setVisible(true);
+                                         
+                String nome, endereco, telefone, email, data;
+                Date data_nasc;
+                
+                nome = rs.getString("nome");
+                // login;
+                // Odeio datas.
+                data = rs.getString("data_nasc");
+                LocalDate localdata = LocalDate.parse(data);  
+                data_nasc = Date.from(localdata.atStartOfDay(ZoneId.systemDefault()).toInstant());
+                endereco = rs.getString("endereco");
+                telefone = rs.getString("telefone");
+                email = rs.getString("email");
+                senha = rs.getString("senha");                                        
+                
+                Usuario user = new Usuario(nome, login, data_nasc, endereco, telefone, email, senha, senha);
+                                                         
+                new Home(user).setVisible(true);
                 this.setVisible(false);
+                                      
+            // Mensagem incorreta!
             } else {
-                // Mensagem incorreta!
+                
                 JOptionPane.showMessageDialog(null, "Usuário ou senha inválidos!");
             }
             
@@ -190,7 +216,8 @@ public class Login extends javax.swing.JFrame {
 
 
     }//GEN-LAST:event_buttonLoginActionPerformed
-
+    
+    
     private void textLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textLoginActionPerformed
         
     }//GEN-LAST:event_textLoginActionPerformed
@@ -267,6 +294,7 @@ public class Login extends javax.swing.JFrame {
     private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JToggleButton jToggleButton1;
     private javax.swing.JLabel labelLogin;
     private javax.swing.JLabel labelSenha;
     private javax.swing.JLabel labelUsuario;
