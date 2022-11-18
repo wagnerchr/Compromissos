@@ -414,66 +414,46 @@ public class AddContato extends javax.swing.JFrame {
     }
       
     public void ConectaContato(Usuario contato) {
-        
-        System.out.println(usuario.getLogin());
-        System.out.println(contato.getEmail());
-        System.out.println("--------------------------------");
           
-        try {
-            
+        try {          
             // Conexão com usuário desta conta
            
-            UserConnection connection_usuario = new UserConnection(); 
-            // UserConnection connection_contato = new UserConnection(); 
+            UserConnection connection_usuario = new UserConnection();            
             
             ResultSet rsUsuario = connection_usuario.autenticacao(usuario);           
             ResultSet rsContato = connection_usuario.autenticacao(contato);           
             
+             String idUsuario = "", idContato = "";
             
-            
-            if(rsUsuario.next()) {
-                
-                String idUsuario = rsUsuario.getString("id");
-                System.out.println("id od usuário:? " +idUsuario);
+            if(rsUsuario.next()) 
+                idUsuario = rsUsuario.getString("id");
+            else 
+                JOptionPane.showMessageDialog(null, "Problema ao estabelecer conexão com o usuário");
+                        
+            if(rsContato.next()) 
+                idContato = rsContato.getString("id");
+            else 
+                JOptionPane.showMessageDialog(null, "Problema ao estabelecer conexão com o contato adicionado");
 
-            } else {
-                System.out.println("pnis");
-            }
+            // ID USUÁRIO E ID CONTATO
+            String query = "insert into pessoacontato() values(?, ?)";
             
-            if(rsContato.next()) {
-                    String idContato = rsContato.getString("id");
-                     System.out.println("Id do Usuário é:  id do contato é : " + idContato );
-            } else {
-                System.out.println("o carai");
-            }
-            /*
+        // Conexão com banco
             ConnectionFactory cf = new ConnectionFactory();
             conn = cf.getConnection();
             conn.setAutoCommit(false);
             
-            // Pegar Id conta
-            
-            PreparedStatement su = conn.prepareStatement(getUsuario);;
-            su.setString(1, usuario.getLogin());
-            
-             System.out.println(su.);
-            
-            // Pegar Id contato adicionado
-            /*
-            PreparedStatement sc = conn.prepareStatement(getContato);
-            sc.setString(1, contato.getEmail());
-            
-            // Inserir na tabela    
-            PreparedStatement ps;
-            
-            ps = conn.prepareStatement(querycontato);
+            PreparedStatement ps = conn.prepareStatement(query);  
                  
-            ps.setInt(1, getUsuario.getLogin());
-            ps.setInt(2, Integer.valueOf(getContato));
+            ps.setInt(1, Integer.parseInt(idUsuario));
+            ps.setInt(2, Integer.parseInt(idContato));
             
+            ps.execute();
+            conn.commit();
+            ps.close();
+                    
             JOptionPane.showMessageDialog(null, "Contato adicionado com sucesso!");
-            */
-            
+             
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());          
         } catch (NumberFormatException ex) {
