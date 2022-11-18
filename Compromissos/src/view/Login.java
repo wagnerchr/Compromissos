@@ -18,22 +18,12 @@ import java.time.ZoneId;
 import static java.time.temporal.TemporalQueries.localDate;
 
 
-
-/**
- *
- * @author Pichau
- */
 public class Login extends javax.swing.JFrame {
     
-    
-    
-
-    
-
     public Login() {
 
-        initComponents();
-       
+        initComponents();   
+        
         icon2.setVisible(false);
     
         labelLogin.setFont(new Font("Comic Sans", Font.BOLD, 25));

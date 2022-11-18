@@ -5,8 +5,6 @@
 package view;
 
 import compromissos2.ConnectionFactory;
-import compromissos2.Contato;
-import compromissos2.ContatoConnection;
 import compromissos2.UserConnection;
 import compromissos2.Usuario;
 import java.awt.Color;
@@ -30,15 +28,18 @@ import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.UIClientPropertyKey;
 
 
 public class AddContato extends javax.swing.JFrame {
 
-
-    public AddContato() {
+    static Usuario usuario;
+    
+    public AddContato(Usuario usuario) {
         
         initComponents();
         
+        this.usuario = usuario;
         this.setResizable(false);
         this.setLocationRelativeTo(null);
         
@@ -337,7 +338,7 @@ public class AddContato extends javax.swing.JFrame {
                          
             Date data_nasc = formatter.parse(data_nascS);    
             
-            Usuario usuario = new Usuario(
+            Usuario contato = new Usuario(
                     nome,
                     data_nasc,
                     endereco,
@@ -345,7 +346,7 @@ public class AddContato extends javax.swing.JFrame {
                     email
             );
             
-            InsereContatoBanco(usuario);             
+            InsereContatoBanco(contato);             
             
             // Fecha Janela              
             this.setVisible(false);
@@ -355,7 +356,7 @@ public class AddContato extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButton1ActionPerformed
    
-    private void InsereContatoBanco(Usuario usuario) {
+    private void InsereContatoBanco(Usuario contato) {
                
         String query = "insert into pessoa() values(?, ?, ?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement ps;
@@ -365,29 +366,30 @@ public class AddContato extends javax.swing.JFrame {
             conn = cf.getConnection();
             conn.setAutoCommit(false);
 
-            String dataSQL = ConvertData(usuario.getData_nasc());     
+            String dataSQL = ConvertData(contato.getData_nasc());     
             ps = conn.prepareStatement(query);
             
             ps.setString(1, null);
-            ps.setString(2, usuario.getNome());
+            ps.setString(2, contato.getNome());
             ps.setString(3, dataSQL);
-            ps.setString(4, usuario.getEndereco());
-            ps.setString(5, usuario.getTelefone());
-            ps.setString(6, usuario.getEmail());
+            ps.setString(4, contato.getEndereco());
+            ps.setString(5, contato.getTelefone());
+            ps.setString(6, contato.getEmail());
             ps.setString(7, null);
             ps.setString(8, null);
             ps.setString(9, null);
+            
+            
             
      
             ps.execute();
             conn.commit();
             ps.close();
             
-
+            ConectaContato(contato);
+         
             JOptionPane.showMessageDialog(null, "Contato Adicionado!");
-            
-            
-
+                     
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
@@ -411,8 +413,73 @@ public class AddContato extends javax.swing.JFrame {
         return dataSQL;
     }
       
-    
+    public void ConectaContato(Usuario contato) {
+        
+        System.out.println(usuario.getLogin());
+        System.out.println(contato.getEmail());
+        System.out.println("--------------------------------");
+          
+        try {
+            
+            // Conexão com usuário desta conta
+           
+            UserConnection connection_usuario = new UserConnection(); 
+            // UserConnection connection_contato = new UserConnection(); 
+            
+            ResultSet rsUsuario = connection_usuario.autenticacao(usuario);           
+            ResultSet rsContato = connection_usuario.autenticacao(contato);           
+            
+            
+            
+            if(rsUsuario.next()) {
+                
+                String idUsuario = rsUsuario.getString("id");
+                System.out.println("id od usuário:? " +idUsuario);
 
+            } else {
+                System.out.println("pnis");
+            }
+            
+            if(rsContato.next()) {
+                    String idContato = rsContato.getString("id");
+                     System.out.println("Id do Usuário é:  id do contato é : " + idContato );
+            } else {
+                System.out.println("o carai");
+            }
+            /*
+            ConnectionFactory cf = new ConnectionFactory();
+            conn = cf.getConnection();
+            conn.setAutoCommit(false);
+            
+            // Pegar Id conta
+            
+            PreparedStatement su = conn.prepareStatement(getUsuario);;
+            su.setString(1, usuario.getLogin());
+            
+             System.out.println(su.);
+            
+            // Pegar Id contato adicionado
+            /*
+            PreparedStatement sc = conn.prepareStatement(getContato);
+            sc.setString(1, contato.getEmail());
+            
+            // Inserir na tabela    
+            PreparedStatement ps;
+            
+            ps = conn.prepareStatement(querycontato);
+                 
+            ps.setInt(1, getUsuario.getLogin());
+            ps.setInt(2, Integer.valueOf(getContato));
+            
+            JOptionPane.showMessageDialog(null, "Contato adicionado com sucesso!");
+            */
+            
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());          
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
+    }
 
     /**
      * @param args the command line arguments
@@ -445,7 +512,7 @@ public class AddContato extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new AddContato().setVisible(true);
+                new AddContato(usuario).setVisible(true);
             }
         });
     }

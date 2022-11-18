@@ -133,7 +133,7 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_jCalendar1MouseClicked
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        new AddContato().setVisible(true);
+        new AddContato(usuario).setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

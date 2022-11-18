@@ -18,6 +18,17 @@ public class UserConnection {
             
             try {
                 
+                if(usuario.getLogin() == null) {
+                    
+                    String sql = "SELECT * FROM pessoa WHERE email = ?";
+                    PreparedStatement ps = conn.prepareStatement(sql);
+                     ps.setString(1, usuario.getEmail()); 
+                     
+                    ResultSet rs = ps.executeQuery();
+                    return rs;
+                    
+                }
+                
                 String sql = "SELECT * FROM pessoa WHERE login = ? AND senha = ?";
                                           
                 PreparedStatement ps = conn.prepareStatement(sql);
