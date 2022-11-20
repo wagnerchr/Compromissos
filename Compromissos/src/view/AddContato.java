@@ -28,7 +28,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import javax.swing.UIClientPropertyKey;
 
 
 public class AddContato extends javax.swing.JFrame {
@@ -39,7 +38,8 @@ public class AddContato extends javax.swing.JFrame {
         
         initComponents();
         
-        this.usuario = usuario;
+        this.usuario = usuario; 
+        System.out.println(this.usuario + " " + usuario);
         this.setResizable(false);
         this.setLocationRelativeTo(null);
         
@@ -53,8 +53,8 @@ public class AddContato extends javax.swing.JFrame {
                 
         ));
        
-    // Iniciando os placeholders
-    startPlaceHolders(campos);
+        // Iniciando os placeholders
+        startPlaceHolders(campos);
             
     }
     
@@ -345,7 +345,7 @@ public class AddContato extends javax.swing.JFrame {
                     telefone,
                     email
             );
-            
+              
             InsereContatoBanco(contato);             
             
             // Fecha Janela              
@@ -379,19 +379,15 @@ public class AddContato extends javax.swing.JFrame {
             ps.setString(8, null);
             ps.setString(9, null);
             
-            
-            
      
             ps.execute();
             conn.commit();
             ps.close();
             
             ConectaContato(contato);
-         
-            JOptionPane.showMessageDialog(null, "Contato Adicionado!");
-                     
+                      
         } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage());
+            JOptionPane.showMessageDialog(null, "Erro em InsereContatoBanco: " + ex.getMessage());
         }
     }   
     
@@ -415,10 +411,15 @@ public class AddContato extends javax.swing.JFrame {
       
     public void ConectaContato(Usuario contato) {
           
-        try {          
+        try {   
+            
             // Conexão com usuário desta conta
            
-            UserConnection connection_usuario = new UserConnection();            
+            UserConnection connection_usuario = new UserConnection();   
+            
+            System.out.println("Usuario: " + usuario );
+            System.out.println("Contato: " + contato);
+            
             
             ResultSet rsUsuario = connection_usuario.autenticacao(usuario);           
             ResultSet rsContato = connection_usuario.autenticacao(contato);           
@@ -448,10 +449,11 @@ public class AddContato extends javax.swing.JFrame {
             ps.setInt(1, Integer.parseInt(idUsuario));
             ps.setInt(2, Integer.parseInt(idContato));
             
+     
             ps.execute();
             conn.commit();
             ps.close();
-                    
+             
             JOptionPane.showMessageDialog(null, "Contato adicionado com sucesso!");
              
         } catch (SQLException ex) {

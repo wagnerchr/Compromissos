@@ -291,6 +291,7 @@ public class Cadastro extends javax.swing.JFrame {
             String nome, data_nascS, login, endereco, telefone, email, senha, senhaConfirm;
             // Date data_nasc;
 
+            
             nome = textNome.getText();          
             data_nascS = textData_nasc.getText();
             endereco = textEndereco.getText();
@@ -314,7 +315,7 @@ public class Cadastro extends javax.swing.JFrame {
                JOptionPane.showMessageDialog(null, "As senhas devem ser iguais!");
             } else if (senha.equals(senhaConfirm)) {     
                 
-                Usuario usuario = new Usuario(
+                Usuario usuario = new Usuario(                     
                         nome,
                         login,
                         data_nasc,

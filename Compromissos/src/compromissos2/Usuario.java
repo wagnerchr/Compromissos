@@ -9,7 +9,8 @@ public class Usuario {
     
     private String nome, login, endereco, telefone, email, senha, senhaConfirm;
     private Date data_nasc;
-
+    private int id;
+    
     public Usuario(String nome, String login, Date data_nasc, String endereco, String telefone, String email, String senha, String senhaConfirm) {
         this.nome = nome;
         this.login = login;
@@ -35,13 +36,30 @@ public class Usuario {
         this.telefone = telefone;
         this.email = email;
     }
-
+    
+    public Usuario(String nome, int id, Date data_nasc, String endereco, String telefone, String email) {
+        this.nome = nome;
+        this.id = id;
+        this.data_nasc = data_nasc;
+        this.endereco = endereco;
+        this.telefone = telefone;
+        this.email = email;       
+    }
+        
     public String getNome() {
         return nome;
     }
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+    
+     public int  getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
     
     public String getLogin() {
