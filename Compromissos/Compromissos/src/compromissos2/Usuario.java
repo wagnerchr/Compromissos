@@ -43,10 +43,9 @@ public class Usuario {
         this.data_nasc = data_nasc;
         this.endereco = endereco;
         this.telefone = telefone;
-        this.email = email;
-        
+        this.email = email;       
     }
-
+        
     public String getNome() {
         return nome;
     }

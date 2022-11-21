@@ -18,7 +18,7 @@ public class UserConnection {
             
             try {
                 
-                if(usuario.getLogin() == null) {
+                if( usuario.getLogin() == null) {
                     
                     String sql = "SELECT * FROM pessoa WHERE email = ?";
                     PreparedStatement ps = conn.prepareStatement(sql);
