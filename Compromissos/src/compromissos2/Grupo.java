@@ -9,13 +9,13 @@ import java.util.ArrayList;
 
 public class Grupo {
     
-    String nome;
-    ArrayList<String> nomes;
+    String nome, descricao;
     
-    public Grupo(String nome, ArrayList<String> nomes) {
+    
+    public Grupo(String nome, String descricao) {
         
         this.nome = nome;
-        this.nomes = nomes;
+        this.descricao = descricao;
     
     }
 
@@ -26,6 +26,14 @@ public class Grupo {
     public void setNome(String nome) {
         this.nome = nome;
     }
-    
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+   
     
 }

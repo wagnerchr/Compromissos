@@ -1,23 +1,17 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package compromissos2;
 
-import compromissos2.connections.ConnectionFactory;
-import java.sql.Connection;
+package compromissos2.connections;
+
+import compromissos2.Usuario;
 import java.sql.PreparedStatement;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
-/**
- *
- * @author Pichau
- */
-public class ContatoConnection {
+public class UserConnection {
     
-    Connection conn;
+   
+        Connection conn;
         
         public ResultSet autenticacao(Usuario usuario) throws SQLException {
             
@@ -25,7 +19,18 @@ public class ContatoConnection {
             
             try {
                 
-                String sql = "SELECT * FROM contato WHERE nome = ? AND ";
+                if( usuario.getLogin() == null) {
+                    
+                    String sql = "SELECT * FROM pessoa WHERE email = ?";
+                    PreparedStatement ps = conn.prepareStatement(sql);
+                     ps.setString(1, usuario.getEmail()); 
+                     
+                    ResultSet rs = ps.executeQuery();
+                    return rs;
+                    
+                }
+                
+                String sql = "SELECT * FROM pessoa WHERE login = ? AND senha = ?";
                                           
                 PreparedStatement ps = conn.prepareStatement(sql);
                 
@@ -43,4 +48,6 @@ public class ContatoConnection {
             }
             
         }
+    
+    
 }

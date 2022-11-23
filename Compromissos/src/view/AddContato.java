@@ -4,8 +4,8 @@
  */
 package view;
 
-import compromissos2.ConnectionFactory;
-import compromissos2.UserConnection;
+import compromissos2.connections.ConnectionFactory;
+import compromissos2.connections.UserConnection;
 import compromissos2.Usuario;
 import java.awt.Color;
 import java.awt.Font;

@@ -5,10 +5,10 @@
 package view;
 
 
-import compromissos2.ConnectionFactory;
+import compromissos2.connections.ConnectionFactory;
 import java.sql.PreparedStatement;
 import java.sql.Connection;
-import compromissos2.UserConnection;
+import compromissos2.connections.UserConnection;
 import compromissos2.Usuario;
 import java.sql.ResultSet;
 import java.sql.SQLException;

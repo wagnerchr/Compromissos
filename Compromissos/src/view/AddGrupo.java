@@ -4,13 +4,20 @@
  */
 package view;
 
-import com.mysql.jdbc.PreparedStatement;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import compromissos2.connections.ConnectionFactory;
 import compromissos2.Grupo;
+import compromissos2.connections.UserConnection;
 import compromissos2.Usuario;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import static view.AddContato.usuario;
+
 
 /**
  *
@@ -19,6 +26,7 @@ import javax.swing.JTextField;
 public class AddGrupo extends javax.swing.JFrame {
 
     static Usuario usuario;
+    Connection conn;
     
     public AddGrupo(Usuario usuario) {
         
@@ -58,6 +66,8 @@ public class AddGrupo extends javax.swing.JFrame {
         textNome = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        textDescricao = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -72,6 +82,10 @@ public class AddGrupo extends javax.swing.JFrame {
             }
         });
 
+        textDescricao.setColumns(20);
+        textDescricao.setRows(5);
+        jScrollPane1.setViewportView(textDescricao);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -82,8 +96,10 @@ public class AddGrupo extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(textNome, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 288, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 172, Short.MAX_VALUE)
                         .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
@@ -93,11 +109,14 @@ public class AddGrupo extends javax.swing.JFrame {
                 .addComponent(fotoGrupo, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(25, 25, 25)
                 .addComponent(textNome, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(79, 79, 79)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 82, Short.MAX_VALUE)
+                        .addGap(79, 79, 79)
+                        .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 57, Short.MAX_VALUE)
                         .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
@@ -109,29 +128,114 @@ public class AddGrupo extends javax.swing.JFrame {
         
         try {
             
-            String nome = textNome.getText();
+            String nome, descricao;
+            
+            nome = textNome.getText();
+            descricao = textDescricao.getText();
             
             
-            Grupo grupo = new Grupo(nome, nomes);
-                    
+            Grupo grupo = new Grupo(
+                    nome,
+                    descricao
+            );
+            
             InsereGrupoBanco(grupo);
-        
+            
+            this.setVisible(false);
+
         } catch(Exception e) {
             System.out.println(e);
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    private void InsereContatoBanco(Usuario contato) {
+    private void InsereGrupoBanco(Grupo grupo) {
         
         String query = "insert into grupo() values(?, ?)";
         PreparedStatement ps;
         
         try {
-        
-        
+            ConnectionFactory cf = new ConnectionFactory();
+            conn = cf.getConnection();
+            conn.setAutoCommit(false);
+            
+            ps = conn.prepareStatement(query);
+            
+            ps.setString(1, null);
+            ps.setString(2, grupo.getNome());
+            ps.setString(3, grupo.getDescricao());
+            
+            ps.execute();
+            conn.commit();
+            ps.close();
+            
+            ConectaGrupo(grupo);
+            
+            
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "Erro em InsereGrupoBanco: " + ex.getMessage());
         }      
+    }
+    
+     public void ConectaGrupo(Grupo grupo) {
+          
+        try {   
+            
+            // Conexão com usuário desta conta
+           
+            UserConnection connection_usuario = new UserConnection();   
+            
+            System.out.println("Usuario: " + usuario );
+            System.out.println("Grupo: " + grupo);
+            
+            
+            ResultSet rsUsuario = connection_usuario.autenticacao(usuario);           
+           
+            String idUsuario = "", idGrupo = "";
+            
+            if(rsUsuario.next()) 
+                idUsuario = rsUsuario.getString("id");
+            else 
+                JOptionPane.showMessageDialog(null, "Problema ao estabelecer conexão com o usuário");
+            
+            if()
+            
+             String idUsuario = "", idContato = "";
+            
+            if(rsUsuario.next()) 
+                idUsuario = rsUsuario.getString("id");
+            else 
+                JOptionPane.showMessageDialog(null, "Problema ao estabelecer conexão com o usuário");
+                        
+            if(rsContato.next()) 
+                idContato = rsContato.getString("id");
+            else 
+                JOptionPane.showMessageDialog(null, "Problema ao estabelecer conexão com o contato adicionado");
+
+            // ID USUÁRIO E ID CONTATO
+            String query = "insert into pessoacontato() values(?, ?)";
+            
+        // Conexão com banco
+            ConnectionFactory cf = new ConnectionFactory();
+            conn = cf.getConnection();
+            conn.setAutoCommit(false);
+            
+            PreparedStatement ps = conn.prepareStatement(query);  
+                 
+            ps.setInt(1, Integer.parseInt(idUsuario));
+            ps.setInt(2, Integer.parseInt(idContato));
+            
+     
+            ps.execute();
+            conn.commit();
+            ps.close();
+             
+            JOptionPane.showMessageDialog(null, "Contato adicionado com sucesso!");
+             
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());          
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
     }
     /**
      * @param args the command line arguments
@@ -172,6 +276,8 @@ public class AddGrupo extends javax.swing.JFrame {
     private java.awt.Label fotoGrupo;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextArea textDescricao;
     private javax.swing.JTextField textNome;
     // End of variables declaration//GEN-END:variables
 }

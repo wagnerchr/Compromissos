@@ -5,7 +5,7 @@
 package view;
 import com.mysql.jdbc.PreparedStatement;
 import compromissos2.Hash;
-import compromissos2.UserConnection;
+import compromissos2.connections.UserConnection;
 import compromissos2.Usuario;
 
 import java.awt.Color;

@@ -4,7 +4,7 @@
  */
 package view;
 
-import compromissos2.ConnectionFactory;
+import compromissos2.connections.ConnectionFactory;
 import compromissos2.Hash;
 import compromissos2.Usuario;
 import java.awt.Color;
