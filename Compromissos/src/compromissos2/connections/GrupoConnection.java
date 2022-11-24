@@ -17,12 +17,18 @@ public class GrupoConnection {
         
         try {
             
-            String sql = "SELECT * FROM grupo WHERE "
-        } catch (Exception e) {
+            String sql = "SELECT * FROM grupo WHERE nome = ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, grupo.getNome());
             
+            ResultSet rs = ps.executeQuery();
+            return rs;
             
+        } catch (Exception err) {
+            JOptionPane.showMessageDialog(null, err);
+                return null;   
         }
-        }
+    }
     
     
 }

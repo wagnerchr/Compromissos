@@ -5,6 +5,8 @@
 package view;
 
 
+import com.toedter.calendar.JDayChooser;
+import compromissos2.Grupo;
 import compromissos2.connections.ConnectionFactory;
 import java.sql.PreparedStatement;
 import java.sql.Connection;
@@ -15,11 +17,9 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 import javax.swing.DefaultListModel;
-import javax.swing.JOptionPane;
+import javax.swing.JOptionPane; 
 
 
 public class Home extends javax.swing.JFrame {
@@ -34,11 +34,20 @@ public class Home extends javax.swing.JFrame {
         this.usuario = usuario;
         
         exibeContatos();
+        exibeGrupos();
         
         this.setLocationRelativeTo(null);             
         labelHello.setText("Hello, " + usuario.getNome());
         
-        Calendario.getDayChooser();
+        
+        
+        JDayChooser dayChooser = Calendario.getDayChooser();
+        dayChooser.setAlwaysFireDayProperty(true); // here is the key
+        
+        dayChooser.addPropertyChangeListener("day", (evt) -> {           
+               marcarCompromisso();   
+        });
+        
         
     }
     
@@ -135,6 +144,69 @@ public class Home extends javax.swing.JFrame {
     
     }
     
+     private void exibeGrupos() {
+        
+        DefaultListModel model = new DefaultListModel();
+        ArrayList<Grupo> lista = carregaGrupos();  
+            
+        try {
+             
+            int count = 0;
+            while(lista.size() > count) {
+                model.addElement(lista.get(count).getNome());  
+                count++;
+            }
+            
+            System.out.println("Essa é a lista de Grupos : " + lista);
+            grupos.setModel(model);
+                         
+        } catch (Exception ex) {
+             JOptionPane.showMessageDialog(null, "Erro em exibeContatos: " + ex);
+        }
+    
+    }
+
+// Carregar lista de grupos do usuário
+     public ArrayList<Grupo> carregaGrupos() {
+        
+        
+        ArrayList<Grupo> lista = new ArrayList<>();
+        
+        try {
+            
+            ConnectionFactory cf = new ConnectionFactory();
+            conn = cf.getConnection();
+            conn.setAutoCommit(false);
+                     
+            String query = "SELECT * FROM grupo g WHERE g.id IN ( SELECT id_grupo FROM pessoagrupo pc WHERE pc.id_pessoa = ?)";
+            
+            
+            int userId = Integer.valueOf(getId(usuario));
+                  
+           
+            PreparedStatement ps = conn.prepareStatement(query);  
+            ps.setInt(1, userId);
+          
+             
+            ResultSet rs = ps.executeQuery();            
+           
+            while(rs.next()) {
+                                                 
+                Grupo grupo = new Grupo(
+                    rs.getString("nome"),
+                    rs.getString("descricao")                                                         
+                );
+                
+                lista.add(grupo);      
+            }
+                                  
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Erro em carregaContatos: " + ex);
+        }
+        
+        return lista;
+    };
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -143,6 +215,9 @@ public class Home extends javax.swing.JFrame {
      */
     @SuppressWarnings("unchecked")
     
+    public void marcarCompromisso() {       
+      new MarcarCompromisso(Calendario.getDate()).setVisible(true);  
+    }
     
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -162,14 +237,14 @@ public class Home extends javax.swing.JFrame {
         jTabbedPane3 = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
+        grupos = new javax.swing.JList<>();
         jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         labelHello.setText("Hello");
 
-        jButton2.setText("jButton2");
+        jButton2.setText("Marcar Compromisso");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
@@ -218,9 +293,9 @@ public class Home extends javax.swing.JFrame {
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(114, 114, 114)
+                .addGap(125, 125, 125)
                 .addComponent(jButton1)
-                .addContainerGap(136, Short.MAX_VALUE))
+                .addContainerGap(125, Short.MAX_VALUE))
             .addComponent(jScrollPane1)
         );
         jPanel3Layout.setVerticalGroup(
@@ -236,12 +311,12 @@ public class Home extends javax.swing.JFrame {
 
         Lista.addTab("Contatos", jTabbedPane2);
 
-        jList1.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+        grupos.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = {" "};
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
-        jScrollPane2.setViewportView(jList1);
+        jScrollPane2.setViewportView(grupos);
 
         jButton3.setText("Criar Grupo");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -254,19 +329,19 @@ public class Home extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(178, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 407, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(148, 148, 148)
                 .addComponent(jButton3)
-                .addGap(138, 138, 138))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 442, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
                 .addComponent(jButton3)
-                .addGap(28, 28, 28))
+                .addContainerGap())
         );
 
         jTabbedPane3.addTab("", jPanel2);
@@ -323,6 +398,15 @@ public class Home extends javax.swing.JFrame {
         new AddGrupo(usuario).setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
 
+    private void dayChooser(java.awt.event.ActionEvent evt) {
+        System.out.println(Calendario.getDate());
+    }
+    
+    public void selecionaData() {
+        System.out.println(Calendario.getDate());
+    }
+    
+    
     /**
      * @param args the command line arguments
      */
@@ -359,16 +443,17 @@ public class Home extends javax.swing.JFrame {
     }
     
     
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private com.toedter.calendar.JCalendar Calendario;
     private javax.swing.JTabbedPane Lista;
     private javax.swing.JList<String> contatos;
+    private javax.swing.JList<String> grupos;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JList<String> jList1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;

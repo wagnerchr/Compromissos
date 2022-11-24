@@ -24,6 +24,8 @@ public class MarcarCompromisso extends javax.swing.JFrame {
     
         this.date = data;
         this.setBackground(Color.white);
+        this.setDefaultCloseOperation(this.DISPOSE_ON_CLOSE);
+
         
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Brazil/West"));           
         cal.setTime(date);
@@ -68,6 +70,11 @@ public class MarcarCompromisso extends javax.swing.JFrame {
         labelMarcar.setText("Marcar compromisso para o dia: ");
 
         jButton1.setText("Voltar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("Confirmar Compromisso");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -160,6 +167,10 @@ public class MarcarCompromisso extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         System.out.println(timePicker.getSelectedTime());
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        this.setVisible(false);
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments

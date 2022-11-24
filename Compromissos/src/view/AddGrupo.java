@@ -10,13 +10,13 @@ import compromissos2.connections.ConnectionFactory;
 import compromissos2.Grupo;
 import compromissos2.connections.UserConnection;
 import compromissos2.Usuario;
+import compromissos2.connections.GrupoConnection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import static view.AddContato.usuario;
 
 
 /**
@@ -150,7 +150,7 @@ public class AddGrupo extends javax.swing.JFrame {
 
     private void InsereGrupoBanco(Grupo grupo) {
         
-        String query = "insert into grupo() values(?, ?)";
+        String query = "insert into grupo() values(?, ?, ?)";
         PreparedStatement ps;
         
         try {
@@ -183,12 +183,14 @@ public class AddGrupo extends javax.swing.JFrame {
             // Conexão com usuário desta conta
            
             UserConnection connection_usuario = new UserConnection();   
+            GrupoConnection connection_group = new GrupoConnection();   
             
             System.out.println("Usuario: " + usuario );
             System.out.println("Grupo: " + grupo);
             
             
             ResultSet rsUsuario = connection_usuario.autenticacao(usuario);           
+            ResultSet rsGrupo = connection_group.autenticacao(grupo);           
            
             String idUsuario = "", idGrupo = "";
             
@@ -197,22 +199,16 @@ public class AddGrupo extends javax.swing.JFrame {
             else 
                 JOptionPane.showMessageDialog(null, "Problema ao estabelecer conexão com o usuário");
             
-            if()
-            
-             String idUsuario = "", idContato = "";
-            
-            if(rsUsuario.next()) 
-                idUsuario = rsUsuario.getString("id");
+            if(rsGrupo.next())
+                idGrupo = rsGrupo.getString("id");
             else 
-                JOptionPane.showMessageDialog(null, "Problema ao estabelecer conexão com o usuário");
-                        
-            if(rsContato.next()) 
-                idContato = rsContato.getString("id");
-            else 
-                JOptionPane.showMessageDialog(null, "Problema ao estabelecer conexão com o contato adicionado");
-
+                 JOptionPane.showMessageDialog(null, "Problema ao estabelecer conexão com o grupo");
+            
+             
+            
+            
             // ID USUÁRIO E ID CONTATO
-            String query = "insert into pessoacontato() values(?, ?)";
+            String query = "insert into pessoagrupo() values(?, ?)";
             
         // Conexão com banco
             ConnectionFactory cf = new ConnectionFactory();
@@ -222,14 +218,14 @@ public class AddGrupo extends javax.swing.JFrame {
             PreparedStatement ps = conn.prepareStatement(query);  
                  
             ps.setInt(1, Integer.parseInt(idUsuario));
-            ps.setInt(2, Integer.parseInt(idContato));
+            ps.setInt(2, Integer.parseInt(idGrupo));
             
      
             ps.execute();
             conn.commit();
             ps.close();
              
-            JOptionPane.showMessageDialog(null, "Contato adicionado com sucesso!");
+            JOptionPane.showMessageDialog(null, "Grupo adicionado com sucesso!");
              
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());          
