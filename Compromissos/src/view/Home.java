@@ -25,6 +25,7 @@ import javax.swing.JOptionPane;
 public class Home extends javax.swing.JFrame {
 
     static Usuario usuario;
+    static ArrayList<Usuario> lista = new ArrayList<>();
     Connection conn;
     
     public Home(Usuario usuario) {
@@ -39,8 +40,7 @@ public class Home extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);             
         labelHello.setText("Hello, " + usuario.getNome());
         
-        
-        
+        // Onclick Calendário
         JDayChooser dayChooser = Calendario.getDayChooser();
         dayChooser.setAlwaysFireDayProperty(true); // here is the key
         
@@ -73,7 +73,7 @@ public class Home extends javax.swing.JFrame {
     public ArrayList<Usuario> carregaContatos() {
         
         
-        ArrayList<Usuario> lista = new ArrayList<>();
+       // ArrayList<Usuario> lista = new ArrayList<>();
         
         try {
             
@@ -279,6 +279,11 @@ public class Home extends javax.swing.JFrame {
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
+        contatos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                contatosMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(contatos);
 
         jButton1.setText("Adicionar novo Contato");
@@ -397,6 +402,10 @@ public class Home extends javax.swing.JFrame {
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         new AddGrupo(usuario).setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void contatosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_contatosMouseClicked
+       new Contato(lista.get(contatos.getAnchorSelectionIndex())).setVisible(true);      
+    }//GEN-LAST:event_contatosMouseClicked
 
     private void dayChooser(java.awt.event.ActionEvent evt) {
         System.out.println(Calendario.getDate());
