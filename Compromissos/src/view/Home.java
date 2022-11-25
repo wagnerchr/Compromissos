@@ -216,7 +216,7 @@ public class Home extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     
     public void marcarCompromisso() {       
-      new MarcarCompromisso(Calendario.getDate()).setVisible(true);  
+      new AddCompromisso(Calendario.getDate()).setVisible(true);  
     }
     
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -395,7 +395,7 @@ public class Home extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
       
-        new MarcarCompromisso(Calendario.getDate()).setVisible(true);
+        new AddCompromisso(Calendario.getDate()).setVisible(true);
     
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -404,7 +404,7 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void contatosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_contatosMouseClicked
-       new Contato(lista.get(contatos.getAnchorSelectionIndex())).setVisible(true);      
+       new VerContato(lista.get(contatos.getAnchorSelectionIndex())).setVisible(true);      
     }//GEN-LAST:event_contatosMouseClicked
 
     private void dayChooser(java.awt.event.ActionEvent evt) {

@@ -391,7 +391,7 @@ public class AddContato extends javax.swing.JFrame {
         }
     }   
     
-      public String ConvertData(Date data) {
+    public String ConvertData(Date data) {
 
         String FORMATO_ANTIGO = "dd/MM/yyyy";
         // String SQL_FORMATO = "yyyy-MM-dd";
