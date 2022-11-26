@@ -1,11 +1,15 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package view;
 
 import compromissos2.Compromisso;
+import compromissos2.Usuario;
+import compromissos2.connections.CompromissoConnection;
+import compromissos2.connections.ConnectionFactory;
+import compromissos2.connections.UserConnection;
 import java.awt.Color;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -13,23 +17,23 @@ import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
+import javax.swing.JOptionPane;
+import static view.AddContato.usuario;
 
-/**
- *
- * @author Pichau
- */
 public class AddCompromisso extends javax.swing.JFrame {
 
     static Date date;
     static boolean firstClick = true;
     static String Start;
     static String Finish;
+    static Usuario usuario;
     
     
-    public AddCompromisso(Date data) {
+    public AddCompromisso(Usuario usuario, Date data) {
         
         initComponents();
     
+        this.usuario = usuario;
         this.date = data;
         this.setBackground(Color.white);
         this.setResizable(false);
@@ -202,7 +206,9 @@ public class AddCompromisso extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+    Connection conn;
 
+    
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
@@ -232,19 +238,103 @@ public class AddCompromisso extends javax.swing.JFrame {
             );
             
             System.out.println(compromisso);
+            
+            InsereCompromissoBanco(compromisso);
         
         } catch(Exception e) {
             System.out.println(e);
         }
-        
-        
-        
-      
-        
-        
-        
+                  
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private void InsereCompromissoBanco(Compromisso compromisso) {
+               
+        String query = "insert into compromisso() values(?, ?, ?, ?, ?, ?)";
+        PreparedStatement ps;
+
+        try {                 
+            ConnectionFactory cf = new ConnectionFactory();
+            conn = cf.getConnection();
+            conn.setAutoCommit(false);
+     
+            ps = conn.prepareStatement(query);
+            
+            ps.setString(1, null);
+            ps.setString(2, compromisso.getNome());
+            ps.setString(3, compromisso.getDescricao());
+            ps.setString(4, compromisso.getLocalc());
+            ps.setString(5, String.valueOf(compromisso.getInicio()));
+            ps.setString(6, String.valueOf(compromisso.getFim()));
+           
+               
+            ps.execute();
+            conn.commit();
+            ps.close();
+            
+            ConectaCompromisso(compromisso);
+                      
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Erro em InsereContatoBanco: " + ex.getMessage());
+        }
+    }
+    
+    public void ConectaCompromisso(Compromisso compromisso) {
+          
+        try {   
+            
+            // Conexão com usuário desta conta
+           
+            UserConnection connection_usuario = new UserConnection();   
+            CompromissoConnection connection_compromisso = new CompromissoConnection();   
+            
+            System.out.println("Usuario: " + usuario );
+            System.out.println("Compromisso: " + compromisso);
+            
+            
+            ResultSet rsUsuario = connection_usuario.autenticacao(usuario);           
+            ResultSet rsCompromisso = connection_compromisso.autenticacao(compromisso);           
+            
+             String idUsuario = "", idCompromisso = "";
+            
+             // Get Id's
+            if(rsUsuario.next()) 
+                idUsuario = rsUsuario.getString("id");
+            else 
+                JOptionPane.showMessageDialog(null, "Problema ao estabelecer conexão com o usuário");
+                        
+            if(rsCompromisso.next()) 
+                idCompromisso = rsCompromisso.getString("id");
+            else 
+                JOptionPane.showMessageDialog(null, "Problema ao estabelecer conexão com o contato adicionado");
+
+            // ID USUÁRIO E ID CONTATO
+            String query = "insert into pessoacompromisso() values(?, ?)";
+            
+              
+        // Conexão com banco
+            ConnectionFactory cf = new ConnectionFactory();
+            conn = cf.getConnection();
+            conn.setAutoCommit(false);
+            
+            PreparedStatement ps = conn.prepareStatement(query);  
+                 
+            ps.setInt(1, Integer.parseInt(idUsuario));
+            ps.setInt(2, Integer.parseInt(idCompromisso));
+            
+     
+            ps.execute();
+            conn.commit();
+            ps.close();
+             
+            JOptionPane.showMessageDialog(null, "Compromisso adicionado com sucesso!");
+             
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());          
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
+    }
+    
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         this.setVisible(false);
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -358,7 +448,7 @@ public class AddCompromisso extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new AddCompromisso(date).setVisible(true);
+                new AddCompromisso(usuario, date).setVisible(true);
             }
         });
     }
