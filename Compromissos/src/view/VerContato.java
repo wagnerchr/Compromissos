@@ -1,18 +1,30 @@
 package view;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import compromissos2.Usuario;
+import compromissos2.connections.ConnectionFactory;
+import compromissos2.connections.UserConnection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import static view.AddContato.usuario;
 
 
 public class VerContato extends javax.swing.JFrame {
 
     static Usuario contato;
+    static Boolean edit = false;
+    
+    static ArrayList<JTextField> campos = new ArrayList<>();
+    
     
     public VerContato(Usuario contato) {
         
@@ -22,12 +34,23 @@ public class VerContato extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
+        campos.addAll(Arrays.asList(      
+                textNome,
+                textData_nasc,
+                textEndereco,
+                textTelefone,
+                textEmail      
+        ));
         
         textNome.setText(contato.getNome());
         textData_nasc.setText( ConvertData(contato.getData_nasc()));
         textEndereco.setText(contato.getEndereco());
         textTelefone.setText(contato.getTelefone());
         textEmail.setText(contato.getEmail());
+        
+        corregaTexto(campos, edit);
+        
+        
                   
     }
      
@@ -43,19 +66,27 @@ public class VerContato extends javax.swing.JFrame {
         textEmail = new javax.swing.JTextField("Email");
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        btnEdit = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setText("jLabel1");
 
-        jButton1.setText("jButton1");
+        jButton1.setText("Voltar");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
 
-        jButton2.setText("jButton2");
+        jButton2.setText("Excluir Contato");
+
+        btnEdit.setText("Editar");
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -72,12 +103,15 @@ public class VerContato extends javax.swing.JFrame {
                             .addComponent(textData_nasc)
                             .addComponent(textEndereco, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
                             .addComponent(textTelefone)
-                            .addComponent(textEmail)))
+                            .addComponent(textEmail))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jButton1)
                         .addGap(155, 155, 155)
-                        .addComponent(jButton2)))
-                .addContainerGap(43, Short.MAX_VALUE))
+                        .addComponent(jButton2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 171, Short.MAX_VALUE)
+                        .addComponent(btnEdit)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -100,13 +134,39 @@ public class VerContato extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 141, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
-                    .addComponent(jButton2))
+                    .addComponent(jButton2)
+                    .addComponent(btnEdit))
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+    Connection conn;
+    
+    public void corregaTexto(ArrayList<JTextField> campos, Boolean e) {
+        
+        for(int i = 0; i < campos.size(); i++) 
+            campos.get(i).setEnabled(e);                
+    }
+    
+    public String ConvertDataSQL(Date data) {
 
+        String FORMATO_ANTIGO = "dd/MM/yyyy";
+        // String SQL_FORMATO = "yyyy-MM-dd";
+
+        SimpleDateFormat sdf = new SimpleDateFormat(FORMATO_ANTIGO);
+
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Paris"));
+        cal.setTime(data);
+
+        int ano = cal.get(Calendar.YEAR);
+        int mes = cal.get(Calendar.MONTH);
+        int dia = cal.get(Calendar.DAY_OF_MONTH);
+
+        String dataSQL = ano + "-" + mes + "-" + dia;
+        return dataSQL;
+    }
+    
     public String ConvertData(Date data) {
 
         String FORMATO_ANTIGO = "dd/MM/yyyy";
@@ -129,7 +189,148 @@ public class VerContato extends javax.swing.JFrame {
        this.setVisible(false);
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        
+        if(btnEdit.getText() == "Confirmar")
+            editarContato(contato);
+        
+        if(!edit) {              
+            edit = true;
+            corregaTexto(campos, edit);
+            btnEdit.setText("Confirmar");
+        } else {
+            
+            edit = false;
+            corregaTexto(campos, edit);
+            btnEdit.setText("Editar");
+            
+        }
+        
+       
+                    
+       
+        
+       
+    }//GEN-LAST:event_btnEditActionPerformed
+
+    private void editarContato(Usuario contato) {
+        
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        
+        try {
+            
+            String nome, data_nascS, endereco, telefone, email;
+              
+            nome = textNome.getText();   
+            data_nascS = textData_nasc.getText();
+            endereco = textEndereco.getText();
+            telefone = textTelefone.getText();
+            email = textEmail.getText();
+            
+            Date data_nasc = formatter.parse(data_nascS); 
+            
+            Usuario contatoEdit = new Usuario(
+                    nome,
+                    data_nasc,
+                    endereco,
+                    telefone,
+                    email
+            );
+            
+            InsereContatoBanco(contatoEdit);
+          
+            this.setVisible(false);
+            
+        } catch(Exception ex) {        
+            JOptionPane.showMessageDialog(null, "Erro em EditaContato: " + ex.getMessage());
+        }  
+    }
     
+    public void InsereContatoBanco(Usuario contatoEdit) {
+    
+        String query = "UPDATE pessoa SET nome = ?, data_nasc = ?, endereco = ?, telefone = ?, email = ? WHERE id = + '" + contato.getId() + "' ";      
+        PreparedStatement ps;
+               
+        try {
+            ConnectionFactory cf = new ConnectionFactory();
+            conn = cf.getConnection();
+            conn.setAutoCommit(false);
+            
+            String dataSQL = ConvertDataSQL( contatoEdit.getData_nasc() ); 
+            ps = conn.prepareStatement(query);
+            
+            ps.setString(1, contatoEdit.getNome());
+            ps.setString(2, dataSQL);
+            ps.setString(3, contatoEdit.getEndereco());
+            ps.setString(4, contatoEdit.getTelefone());
+            ps.setString(5, contatoEdit.getEmail());          
+                
+            ps.executeUpdate();
+            conn.commit();
+            ps.close();
+            
+            //ConectaContato(contato);
+            JOptionPane.showMessageDialog(null, "Contato editado com sucesso!");
+            
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Erro em InsereContatoBanco: " + ex.getMessage());
+        }
+    
+    }
+    
+    
+    public void ConectaContato(Usuario contato) {
+          
+        try {   
+            
+            // Conexão com usuário desta conta
+           
+            UserConnection connection_usuario = new UserConnection();   
+            
+            System.out.println("Usuario: " + contato );         
+            
+            
+            ResultSet rsUsuario = connection_usuario.autenticacao(usuario);           
+            ResultSet rsContato = connection_usuario.autenticacao(contato);           
+            
+             String idUsuario = "", idContato = "";
+            
+            if(rsUsuario.next()) 
+                idUsuario = rsUsuario.getString("id");
+            else 
+                JOptionPane.showMessageDialog(null, "Problema ao estabelecer conexão com o usuário");
+                        
+            if(rsContato.next()) 
+                idContato = rsContato.getString("id");
+            else 
+                JOptionPane.showMessageDialog(null, "Problema ao estabelecer conexão com o contato adicionado");
+
+            // ID USUÁRIO E ID CONTATO
+            String query = "insert into pessoacontato() values(?, ?)";
+            
+        // Conexão com banco
+            ConnectionFactory cf = new ConnectionFactory();
+            conn = cf.getConnection();
+            conn.setAutoCommit(false);
+            
+            PreparedStatement ps = conn.prepareStatement(query);  
+                 
+            ps.setInt(1, Integer.parseInt(idUsuario));
+            ps.setInt(2, Integer.parseInt(idContato));
+            
+     
+            ps.execute();
+            conn.commit();
+            ps.close();
+             
+            
+             
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());          
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
+    }
    
     /**
      * @param args the command line arguments
@@ -166,6 +367,7 @@ public class VerContato extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnEdit;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;

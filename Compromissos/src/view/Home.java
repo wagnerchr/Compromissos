@@ -82,19 +82,15 @@ public class Home extends javax.swing.JFrame {
             conn.setAutoCommit(false);
                      
             String query = "SELECT * FROM pessoa p WHERE p.id IN ( SELECT id_contato FROM pessoacontato pc WHERE pc.id_pessoa = ?)";
-            
-            
+                    
             int userId = Integer.valueOf(getId(usuario));
-                  
-           
+                           
             PreparedStatement ps = conn.prepareStatement(query);  
             ps.setInt(1, userId);
-          
-             
+                     
             ResultSet rs = ps.executeQuery();            
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
             
-  
             while(rs.next()) {
                                    
                 SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd"); 
@@ -109,6 +105,7 @@ public class Home extends javax.swing.JFrame {
                         rs.getString("email")                      
                 );
                 
+               
                 lista.add(contato);      
             }
                                   
@@ -134,8 +131,7 @@ public class Home extends javax.swing.JFrame {
                 model.addElement(lista.get(count).getNome());  
                 count++;
             }
-            
-            System.out.println("Essa é a lista: " + lista);
+                
             contatos.setModel(model);
                          
         } catch (Exception ex) {

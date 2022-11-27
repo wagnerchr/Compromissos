@@ -59,8 +59,7 @@ public class AddContato extends javax.swing.JFrame {
     }
     
     public void startPlaceHolders(ArrayList<JTextField> campos) {
-        
-        
+               
         // Texto Padrão
             for (int i = 0; i < campos.size(); i++) {
                 
@@ -346,6 +345,7 @@ public class AddContato extends javax.swing.JFrame {
                     email
             );
               
+           
             InsereContatoBanco(contato);             
             
             // Fecha Janela              
