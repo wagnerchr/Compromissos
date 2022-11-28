@@ -1,9 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package view;
-import com.mysql.jdbc.PreparedStatement;
+
 import compromissos2.Hash;
 import compromissos2.connections.UserConnection;
 import compromissos2.Usuario;
@@ -15,32 +11,150 @@ import java.sql.ResultSet;
 import java.util.Date;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import static java.time.temporal.TemporalQueries.localDate;
+import java.util.concurrent.TimeUnit;
+import java.util.prefs.Preferences;
 
 
 public class Login extends javax.swing.JFrame {
-    
+     
+    Preferences pref;
+    boolean rememberPref;
+      
     public Login() {
-
+        
+        
         initComponents();   
+       
+        try {
+            
+        loginScreen();
+        
+        TimeUnit.SECONDS.sleep(1);
+        
+        rememberMe();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+}
+
+// INICIA TELA LOGIN
+    public void loginScreen() {
+                           
+        this.setVisible(true);
         
         icon2.setVisible(false);
-    
+   
         labelLogin.setFont(new Font("Comic Sans", Font.BOLD, 25));
         labelLogin.setAlignmentX(500);
         labelLogin.setAlignmentY(500);
-        this.setVisible(true);
-        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        
+        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.setResizable(false);
         this.setLocationRelativeTo(null);
-
-        
+    
         loginFundo.setBackground(Color.decode("#CDF0EA"));
-
     }
     
     
+// REMEMBER ME - AUTOLOGIN
+    public void rememberMe() {
+        
+        pref = Preferences.userNodeForPackage(this.getClass());   
+        rememberPref = pref.getBoolean("rememberMe", Boolean.valueOf(""));
+        
+        if (rememberPref) {              
+            String login = pref.get("User", "");
+            String senha = pref.get("Password", "");           
+            checkLogin.setSelected(rememberPref);
+              
+            Connection(login, senha);
+                           
+        }                  
+    }
+    
+// CONEXÃO COM BD - LOGAR NA APLICAÇÃO
+    public void Connection(String login, String senha) {
+          
+        try {
+            
+            Hash hash = new Hash();
+            
+            //String login = textLogin.getText();               
+            //String senha = hash.hashSenha(textSenha.getText());
+            
+            senha = hash.hashSenha(senha);
+                     
+            Usuario usuario = new Usuario(login, senha);               
+            UserConnection connection = new UserConnection();           
+            ResultSet rs = connection.autenticacao(usuario); 
+            
+            // Conexão parâmetros batem
+            if(rs.next()) {
+                          
+            // ---------------------------------------------------------- 
+            /*
+                if(checkLogin.isSelected() && !rememberPref) {
+                    pref.put("User", textLogin.getText());
+                    pref.put("Password", textSenha.getText());
+                    pref.putBoolean("rememberMe", true);
 
+                } else if(!checkLogin.isSelected() && rememberPref){
+                    pref.put("User", "");
+                    pref.put("Password", "");
+                    pref.putBoolean("rememberMe", false);
+                }
+            */    
+                             
+                String nome, endereco, telefone, email, data;
+                Date data_nasc;
+                
+                nome = rs.getString("nome");                         
+                data = rs.getString("data_nasc");
+                LocalDate localdata = LocalDate.parse(data);  
+                data_nasc = Date.from(localdata.atStartOfDay(ZoneId.systemDefault()).toInstant());
+                
+                endereco = rs.getString("endereco");
+                telefone = rs.getString("telefone");
+                email = rs.getString("email");
+                // login;
+                senha = rs.getString("senha");                                        
+                
+                Usuario user = new Usuario(nome, login, data_nasc, endereco, telefone, email, senha, senha);
+                   
+                new Home(user).setVisible(true); 
+                
+                this.dispose();
+                                                                        
+            // Mensagem incorreta!
+            } else {
+                
+                JOptionPane.showMessageDialog(null, "Usuário ou senha inválidos!");
+            }
+                      
+        } catch (Exception err) {
+            JOptionPane.showMessageDialog(null, err);
+        }
+    
+    }
+ 
+// VER SENHA   
+    public void showPassWord(boolean showSenha) {
+        if(showSenha) {
+                textSenha.setEchoChar((char) 0);
+                showSenha = false;
+                icon1.setVisible(false);
+                icon2.setVisible(true);
+
+            } else {
+                textSenha.setEchoChar('*');
+                showSenha = true;
+                icon1.setVisible(true);
+                icon2.setVisible(false);
+            }
+    } 
+    
+// GOOD TEXT
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -55,7 +169,7 @@ public class Login extends javax.swing.JFrame {
         labelLogin = new javax.swing.JLabel();
         textSenha = new javax.swing.JPasswordField();
         icon1 = new javax.swing.JLabel();
-        jCheckBox1 = new javax.swing.JCheckBox();
+        checkLogin = new javax.swing.JCheckBox();
         labelUsuario = new javax.swing.JLabel();
         labelSenha = new javax.swing.JLabel();
         icon2 = new javax.swing.JLabel();
@@ -70,12 +184,6 @@ public class Login extends javax.swing.JFrame {
 
         jLabel2.setText(" Nãso possui Conta?");
         loginFundo.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 350, 110, 20));
-
-        textLogin.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                textLoginActionPerformed(evt);
-            }
-        });
         loginFundo.add(textLogin, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 140, 300, 30));
 
         buttonLogin.setText("Fazer Login");
@@ -97,12 +205,6 @@ public class Login extends javax.swing.JFrame {
         labelLogin.setText("Fazer Login");
         labelLogin.setMaximumSize(new java.awt.Dimension(500, 500));
         loginFundo.add(labelLogin, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 50, 240, 50));
-
-        textSenha.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                textSenhaActionPerformed(evt);
-            }
-        });
         loginFundo.add(textSenha, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 180, 300, 30));
 
         icon1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
@@ -117,8 +219,8 @@ public class Login extends javax.swing.JFrame {
         });
         loginFundo.add(icon1, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 180, 40, 30));
 
-        jCheckBox1.setText("Lembrar de mim");
-        loginFundo.add(jCheckBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 220, -1, -1));
+        checkLogin.setText("Lembrar de mim");
+        loginFundo.add(checkLogin, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 220, -1, -1));
 
         labelUsuario.setText("Usuario");
         loginFundo.add(labelUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 140, -1, -1));
@@ -151,6 +253,7 @@ public class Login extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+// EVENTS
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         Cadastro cadastro = new Cadastro();
         cadastro.setVisible(true);
@@ -158,63 +261,8 @@ public class Login extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void buttonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonLoginActionPerformed
-        try {
-            
-            Hash hash = new Hash();
-            
-            String login = textLogin.getText();   
-            String senha = hash.hashSenha(textSenha.getText());
-                     
-            Usuario usuario = new Usuario(login, senha);               
-            UserConnection connection = new UserConnection();           
-            ResultSet rs = connection.autenticacao(usuario); 
-            
-            // Conexão parâmetros batem
-            if(rs.next()) {
-                                         
-                String nome, endereco, telefone, email, data;
-                Date data_nasc;
-                
-                nome = rs.getString("nome");
-               
-                // Odeio datas.
-                data = rs.getString("data_nasc");
-                LocalDate localdata = LocalDate.parse(data);  
-                data_nasc = Date.from(localdata.atStartOfDay(ZoneId.systemDefault()).toInstant());
-                
-                endereco = rs.getString("endereco");
-                telefone = rs.getString("telefone");
-                email = rs.getString("email");
-                // login;
-                senha = rs.getString("senha");                                        
-                
-                Usuario user = new Usuario(nome, login, data_nasc, endereco, telefone, email, senha, senha);
-                                                         
-                new Home(user).setVisible(true);
-                this.setVisible(false);
-                                      
-            // Mensagem incorreta!
-            } else {
-                
-                JOptionPane.showMessageDialog(null, "Usuário ou senha inválidos!");
-            }
-            
-            
-        } catch (Exception err) {
-            JOptionPane.showMessageDialog(null, err);
-        }
-
-
+         Connection(textLogin.getText(), textSenha.getText());
     }//GEN-LAST:event_buttonLoginActionPerformed
-    
-    
-    private void textLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textLoginActionPerformed
-        
-    }//GEN-LAST:event_textLoginActionPerformed
-
-    private void textSenhaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textSenhaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_textSenhaActionPerformed
 
 // VER SENHA
     private void icon1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_icon1MouseClicked
@@ -224,21 +272,6 @@ public class Login extends javax.swing.JFrame {
     private void icon2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_icon2MouseClicked
         showPassWord(false);
     }//GEN-LAST:event_icon2MouseClicked
-
-    public void showPassWord(boolean showSenha) {
-        if(showSenha) {
-                textSenha.setEchoChar((char) 0);
-                showSenha = false;
-                icon1.setVisible(false);
-                icon2.setVisible(true);
-
-            } else {
-                textSenha.setEchoChar('*');
-                showSenha = true;
-                icon1.setVisible(true);
-                icon2.setVisible(false);
-            }
-    } 
 // FIM VER SENHA    
     
     /**
@@ -278,10 +311,10 @@ public class Login extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonLogin;
+    private javax.swing.JCheckBox checkLogin;
     private javax.swing.JLabel icon1;
     private javax.swing.JLabel icon2;
     private javax.swing.JButton jButton2;
-    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JToggleButton jToggleButton1;

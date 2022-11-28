@@ -32,6 +32,11 @@ public class Home extends javax.swing.JFrame {
         
         initComponents();
         
+        /*
+        Login login = new Login();
+        login.setVisible(false);
+        */
+        
         this.usuario = usuario;
         
         exibeContatos();

@@ -29,7 +29,7 @@ public class Compromissos {
            // handle exception
         }
 
-        new Login().setVisible(true);
+        new Login();
         
     
     }
