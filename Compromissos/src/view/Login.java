@@ -24,17 +24,15 @@ public class Login extends javax.swing.JFrame {
         
         
         initComponents();   
-       
-        try {
-            
+             
+      
         loginScreen();
         
-        TimeUnit.SECONDS.sleep(1);
         
+
         rememberMe();
-        } catch (Exception e) {
-            System.out.println(e);
-        }
+       
+       
 
 }
 
@@ -60,17 +58,26 @@ public class Login extends javax.swing.JFrame {
 // REMEMBER ME - AUTOLOGIN
     public void rememberMe() {
         
-        pref = Preferences.userNodeForPackage(this.getClass());   
+        pref = Preferences.userNodeForPackage(this.getClass()); 
+        
+        System.out.println(pref.getBoolean("rememberMe", Boolean.valueOf("")));
+        
         rememberPref = pref.getBoolean("rememberMe", Boolean.valueOf(""));
+        
+       
         
         if (rememberPref) {              
             String login = pref.get("User", "");
-            String senha = pref.get("Password", "");           
-            checkLogin.setSelected(rememberPref);
-              
-            Connection(login, senha);
-                           
-        }                  
+            String senha = pref.get("Password", ""); 
+            
+            
+            textLogin.setText(login);
+            textSenha.setText(senha);
+           
+            checkLogin.setSelected(rememberPref);           
+            Connection(login, senha);                          
+        }   
+     
     }
     
 // CONEXÃO COM BD - LOGAR NA APLICAÇÃO
@@ -92,11 +99,25 @@ public class Login extends javax.swing.JFrame {
             // Conexão parâmetros batem
             if(rs.next()) {
                           
+                if( checkLogin.isSelected() && !rememberPref ) {
+                    
+                    pref.put("User", textLogin.getText() );
+                    pref.put("Password", textSenha.getText());
+                    pref.putBoolean("rememberMe", true);
+                    
+                 
+                } else if( !checkLogin.isSelected() && rememberPref ) {
+                    
+                    pref.put("User", "");
+                    pref.put("Password", "");
+                    pref.putBoolean("rememberMe", false);
+                
+                     System.out.println("NOAOASADOASDOASDOA AO");
+                }
             // ---------------------------------------------------------- 
             /*
                 if(checkLogin.isSelected() && !rememberPref) {
-                    pref.put("User", textLogin.getText());
-                    pref.put("Password", textSenha.getText());
+                   
                     pref.putBoolean("rememberMe", true);
 
                 } else if(!checkLogin.isSelected() && rememberPref){

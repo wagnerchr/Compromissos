@@ -328,7 +328,7 @@ public class Cadastro extends javax.swing.JFrame {
                 InsereUsuarioBanco(usuario);
                 
                 // Fecha Janela
-                new Login().setVisible(true);
+                new Login();
                 this.setVisible(false);
             }                     
         } catch (Exception e) {
@@ -476,7 +476,7 @@ public class Cadastro extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         this.setVisible(false);
-        new Login().setVisible(true);
+        new Login();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void textData_nascFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_textData_nascFocusGained
