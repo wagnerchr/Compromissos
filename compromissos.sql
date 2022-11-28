@@ -1,48 +1,77 @@
 CREATE DATABASE compromissos;
+USE compromissos;
+# DROP DATABASE compromissos;
 
-use compromissos;
-SET SQL_SAFE_UPDATES = 0;
+# ---------- CADASTRO ----------
 
-# TABELA CADASTRO
-CREATE TABLE cadastro(
-	id INT NOT NULL AUTO_INCREMENT,
-    nome VARCHAR(90) NOT NULL,
-    data_nasc DATE NOT NULL,
-    endereco VARCHAR(90) NOT NULL,
-    telefone VARCHAR(45) NOT NULL,
-    email VARCHAR(45) NOT NULL,
-    senha VARCHAR(45) NOT NULL,
-    
-    PRIMARY KEY(id),
-    FOREIGN KEY(id) references cadastrogrupo(cadastroid)
+CREATE TABLE pessoa (
+# CHAVE
+  id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+ 
+  nome varchar(255),
+  data_nasc DATE,
+  endereco varchar(255),
+  telefone varchar(255) UNIQUE,
+  email varchar(255) UNIQUE,
+  
+/* -- Só quando for Cadastro -- */
+  login VARCHAR(255) UNIQUE,
+  senha varchar(255),
+  ativo boolean
 );
 
-CREATE TABLE cadastrogrupo(
-	cadastroid INT NOT NULL,
-    grupoid INT NOT NULL,
-    
-    FOREIGN KEY(cadastroid) REFERENCES cadastro(id),
-    FOREIGN KEY(grupoid) REFERENCES grupo(id)
+CREATE TABLE pessoacontato (
+	id_pessoa int NOT NULL,
+	id_contato int NOT NULL,
+	
+    FOREIGN KEY (id_pessoa) REFERENCES pessoa(id)
 );
 
-CREATE TABLE grupo(
-	id INT NOT NULL AUTO_INCREMENT,
-    nome VARCHAR(45) NOT NULL,
+CREATE TABLE pessoagrupo (
+	id_pessoa int NOT NULL,
+    id_grupo int NOT NULL,
     
-    PRIMARY KEY(id),
-    FOREIGN KEY(id) REFERENCES cadastrogrupo(grupoid)
+    FOREIGN KEY (id_pessoa) REFERENCES pessoa(id),
+    FOREIGN KEY (id_grupo) REFERENCES grupo(id)
 );
+ 
+CREATE TABLE grupo (
+	id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255),
+    descricao VARCHAR(255)
+);
+
+CREATE TABLE compromisso (
+	id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255),
+    descricao VARCHAR(255),
+    localc VARCHAR(255),
+    data_inicio DATETIME,
+    data_fim DATETIME
+);
+
+CREATE TABLE pessoacompromisso (
+	id_pessoa int NOT NULL,
+    id_compromisso int NOT NULL,
+    
+    FOREIGN KEY (id_pessoa) REFERENCES pessoa(id),
+	FOREIGN KEY (id_compromisso) REFERENCES compromisso(id)
+);
+
 
 /*
-INSERTS
-	INSERT INTO cadastro (nome,  data_nasc,   endereco, telefone, email, senha) VALUES("Wagner", "2001/01/17", "AVENIDA SEI LÁ", "123456", "email@email.com", "1233455");
-	INSERT INTO cadastrogrupo(cadastroid, grupoid) VALUES(1, 1);
-	INSERT INTO grupo (nome) VALUES("Grupo da faculdade");
+SELECT * from compromisso;
+Describe grupo;
+SELECT * FROM grupo;
+SELECT * FROM pessoagrupo WHERE pessoagrupo.id_pessoa = 1;
+
+SELECT * FROM pessoa p WHERE p.id IN (SELECT id_contato FROM pessoacontato pc WHERE pc.id_pessoa = 1);
+
+SELECT * FROM pessoagrupo;
+SELECT * FROM grupo g WHERE g.id IN ( SELECT id_grupo FROM pessoagrupo pc WHERE pc.id_pessoa = 1);
+
+DESCRIBE pessoa;
+Select * from pessoa where pessoa.nome = "eweqeqw";
+
+SELECT * FROM pessoa p WHERE p.id IN ( SELECT id_contato FROM pessoacontato pc WHERE pc.id_pessoa = 1);
 */
-	
-SELECT * FROM cadastrogrupo;
-
-# VENDO CADASTROS E SEUS GRUPOS
-SELECT c.nome, g.nome FROM cadastro c INNER JOIN cadastrogrupo cg INNER JOIN grupo g WHERE cg.cadastroid = c.id AND cg.grupoid = g.id;
-
-
