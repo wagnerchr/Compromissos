@@ -35,8 +35,7 @@ public class VerContato extends javax.swing.JFrame {
         
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-
-        System.out.println("BLZX VLASKNJASDN JASNDJAS NDJA NJAS: " + contato.getData_nasc());
+     
         
         campos.addAll(Arrays.asList(      
                 textNome,
@@ -50,7 +49,7 @@ public class VerContato extends javax.swing.JFrame {
         
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         textData_nasc.setText(dateFormat.format(contato.getData_nasc()));
-                             
+                          
         textEndereco.setText(contato.getEndereco());
         textTelefone.setText(contato.getTelefone());
         textEmail.setText(contato.getEmail());
@@ -114,7 +113,7 @@ public class VerContato extends javax.swing.JFrame {
                         .addComponent(jButton1)
                         .addGap(155, 155, 155)
                         .addComponent(jButton2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 171, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 173, Short.MAX_VALUE)
                         .addComponent(btnEdit)))
                 .addContainerGap())
         );
@@ -136,7 +135,7 @@ public class VerContato extends javax.swing.JFrame {
                         .addComponent(textTelefone, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(47, 47, 47)
                 .addComponent(textEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 141, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 140, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2)

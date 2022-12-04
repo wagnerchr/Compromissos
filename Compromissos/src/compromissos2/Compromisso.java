@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 public class Compromisso {
     
     String nome, descricao ,localc;
+    int id;
     LocalDateTime inicio, fim;  
     
     public Compromisso(String nome, String descricao, String localc, LocalDateTime inicio, LocalDateTime fim) {
@@ -24,6 +25,17 @@ public class Compromisso {
         this.descricao = descricao;
         this.localc = localc;      
     }
+    
+    public Compromisso(String nome, int id, String descricao, String localc, LocalDateTime inicio, LocalDateTime fim) {
+    
+        this.nome = nome;
+        this.id = id;
+        this.descricao = descricao;
+        this.localc = localc;
+        this.inicio = inicio;
+        this.fim = fim;
+    
+    }
 
     public String getNome() {
         return nome;
@@ -31,6 +43,14 @@ public class Compromisso {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+    
+    public int  getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getDescricao() {

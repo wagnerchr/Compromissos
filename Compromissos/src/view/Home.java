@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.DefaultListModel;
@@ -22,6 +23,7 @@ import javax.swing.DefaultListModel;
 public class Home extends javax.swing.JFrame {
 
     static Usuario usuario;
+    
     static ArrayList<Usuario> lista = new ArrayList<>();
     static ArrayList<Compromisso> listaCompromissos = new ArrayList<>();
     
@@ -146,7 +148,8 @@ public class Home extends javax.swing.JFrame {
                 
                                       
                 Compromisso compromisso = new Compromisso(
-                        rs.getString("nome"),                                      
+                        rs.getString("nome"),   
+                        rs.getInt("id"),
                         rs.getString("descricao"),
                         rs.getString("localc"),
                         rs.getTimestamp("data_inicio").toLocalDateTime(),
@@ -180,6 +183,7 @@ public class Home extends javax.swing.JFrame {
                 count++;
             }
             
+            
             compromissos.setModel(model);
             
         } catch (Exception ex) {
@@ -196,8 +200,7 @@ public class Home extends javax.swing.JFrame {
         lista.clear();
         
         ArrayList<Usuario> lista = carregaContatos(); 
-        
-            
+             
         try {
              
             int count = 0;
@@ -207,6 +210,7 @@ public class Home extends javax.swing.JFrame {
             }
                 
             contatos.setModel(model);
+           
                          
         } catch (Exception ex) {
              JOptionPane.showMessageDialog(null, "Erro em exibeContatos: " + ex);
@@ -331,6 +335,11 @@ public class Home extends javax.swing.JFrame {
             String[] strings = {""};
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
+        });
+        compromissos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                compromissosMouseClicked(evt);
+            }
         });
         jScrollPane4.setViewportView(compromissos);
 
@@ -514,6 +523,13 @@ public class Home extends javax.swing.JFrame {
          //login.rememberMe();
               
     }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void compromissosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_compromissosMouseClicked
+        this.setVisible(false);    
+        
+        VerCompromisso vercompromisso = new VerCompromisso(listaCompromissos.get(compromissos.getAnchorSelectionIndex()), usuario);
+        vercompromisso.setVisible(true);
+    }//GEN-LAST:event_compromissosMouseClicked
 
     private void dayChooser(java.awt.event.ActionEvent evt) {
         System.out.println(Calendario.getDate());
