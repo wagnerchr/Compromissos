@@ -10,9 +10,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import static view.AddContato.usuario;
@@ -21,19 +19,25 @@ import static view.AddContato.usuario;
 public class VerContato extends javax.swing.JFrame {
 
     static Usuario contato;
+    static Usuario usuario;
+    
     static Boolean edit = false;
     
     static ArrayList<JTextField> campos = new ArrayList<>();
     
     
-    public VerContato(Usuario contato) {
+    public VerContato(Usuario contato, Usuario usuario) {
         
         initComponents();
         
         this.contato = contato;
+        this.usuario = usuario;
+        
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
+        System.out.println("BLZX VLASKNJASDN JASNDJAS NDJA NJAS: " + contato.getData_nasc());
+        
         campos.addAll(Arrays.asList(      
                 textNome,
                 textData_nasc,
@@ -41,17 +45,18 @@ public class VerContato extends javax.swing.JFrame {
                 textTelefone,
                 textEmail      
         ));
-        
+               
         textNome.setText(contato.getNome());
-        textData_nasc.setText( ConvertData(contato.getData_nasc()));
+        
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        textData_nasc.setText(dateFormat.format(contato.getData_nasc()));
+                             
         textEndereco.setText(contato.getEndereco());
         textTelefone.setText(contato.getTelefone());
         textEmail.setText(contato.getEmail());
         
         corregaTexto(campos, edit);
-        
-        
-                  
+                               
     }
      
     @SuppressWarnings("unchecked")
@@ -148,13 +153,9 @@ public class VerContato extends javax.swing.JFrame {
         for(int i = 0; i < campos.size(); i++) 
             campos.get(i).setEnabled(e);                
     }
-    
+       
+/*
     public String ConvertDataSQL(Date data) {
-
-        String FORMATO_ANTIGO = "dd/MM/yyyy";
-        // String SQL_FORMATO = "yyyy-MM-dd";
-
-        SimpleDateFormat sdf = new SimpleDateFormat(FORMATO_ANTIGO);
 
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Paris"));
         cal.setTime(data);
@@ -163,27 +164,32 @@ public class VerContato extends javax.swing.JFrame {
         int mes = cal.get(Calendar.MONTH);
         int dia = cal.get(Calendar.DAY_OF_MONTH);
 
+        //String diaS = dia <= 9 ? "0" + String.valueOf(dia) : String.valueOf(dia);
+        
         String dataSQL = ano + "-" + mes + "-" + dia;
         return dataSQL;
     }
-    
+*/    
+// DATE TO STRING
+    /*
     public String ConvertData(Date data) {
-
-        String FORMATO_ANTIGO = "dd/MM/yyyy";
-        // String SQL_FORMATO = "yyyy-MM-dd";
-
-        SimpleDateFormat sdf = new SimpleDateFormat(FORMATO_ANTIGO);
-
+           
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Europe/Paris"));
         cal.setTime(data);
 
         int ano = cal.get(Calendar.YEAR);
-        int mes = cal.get(Calendar.MONTH);
+        int mes = cal.get(Calendar.MONTH) + 1;
         int dia = cal.get(Calendar.DAY_OF_MONTH);
-
-        String dataSQL = dia + "/" + mes + "/" + ano;
+           
+        String mesS = mes <= 9 ? "0" + String.valueOf(mes) : String.valueOf(mes);
+        String diaS = mes <= 9 ? "0" + String.valueOf(dia) : String.valueOf(dia);
+        
+        String dataSQL = diaS + "/" + mesS + "/" + ano;
+        
         return dataSQL;
     }
+    */
+//
     
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
        this.setVisible(false);
@@ -202,15 +208,11 @@ public class VerContato extends javax.swing.JFrame {
             
             edit = false;
             corregaTexto(campos, edit);
-            btnEdit.setText("Editar");
-            
+            btnEdit.setText("Editar");           
         }
         
-       
-                    
-       
         
-       
+  
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void editarContato(Usuario contato) {
@@ -226,8 +228,10 @@ public class VerContato extends javax.swing.JFrame {
             endereco = textEndereco.getText();
             telefone = textTelefone.getText();
             email = textEmail.getText();
-            
+             
             Date data_nasc = formatter.parse(data_nascS); 
+            
+            System.out.println("EDITANDO DATA : " + data_nascS);
             
             Usuario contatoEdit = new Usuario(
                     nome,
@@ -236,11 +240,14 @@ public class VerContato extends javax.swing.JFrame {
                     telefone,
                     email
             );
+              
             
             InsereContatoBanco(contatoEdit);
-          
-            this.setVisible(false);
             
+            this.setVisible(false);
+            Home home = new Home(usuario);
+            home.setVisible(true);
+   
         } catch(Exception ex) {        
             JOptionPane.showMessageDialog(null, "Erro em EditaContato: " + ex.getMessage());
         }  
@@ -256,11 +263,14 @@ public class VerContato extends javax.swing.JFrame {
             conn = cf.getConnection();
             conn.setAutoCommit(false);
             
-            String dataSQL = ConvertDataSQL( contatoEdit.getData_nasc() ); 
+            // String dataSQL = ConvertDataSQL( contatoEdit.getData_nasc() ); 
+                       
+            java.sql.Date sqlDate = new java.sql.Date(contatoEdit.getData_nasc().getTime());
+          
             ps = conn.prepareStatement(query);
             
             ps.setString(1, contatoEdit.getNome());
-            ps.setString(2, dataSQL);
+            ps.setDate(2, sqlDate);
             ps.setString(3, contatoEdit.getEndereco());
             ps.setString(4, contatoEdit.getTelefone());
             ps.setString(5, contatoEdit.getEmail());          
@@ -323,8 +333,7 @@ public class VerContato extends javax.swing.JFrame {
             conn.commit();
             ps.close();
              
-            
-             
+                      
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());          
         } catch (NumberFormatException ex) {
@@ -362,7 +371,7 @@ public class VerContato extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
-            new VerContato(contato).setVisible(true);
+            new VerContato(contato, usuario).setVisible(true);
         });
     }
 
