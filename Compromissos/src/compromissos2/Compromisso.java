@@ -4,8 +4,8 @@
  */
 package compromissos2;
 
+import java.security.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 
 public class Compromisso {
@@ -20,6 +20,13 @@ public class Compromisso {
         this.localc = localc;
         this.inicio = inicio;
         this.fim = fim;
+    }
+    
+    public Compromisso(String nome, String descricao, String localc) {
+    
+        this.nome = nome;
+        this.descricao = descricao;
+        this.localc = localc;      
     }
 
     public String getNome() {

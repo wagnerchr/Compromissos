@@ -154,6 +154,10 @@
       </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="textNomeCompromisso">
+      <Events>
+        <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="textNomeCompromissoFocusGained"/>
+        <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="textNomeCompromissoFocusLost"/>
+      </Events>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTextField(&quot;Nome do Compromisso&quot;)"/>
       </AuxValues>
@@ -206,6 +210,10 @@
       </AuxValues>
     </Component>
     <Component class="javax.swing.JTextField" name="textDataFim">
+      <Events>
+        <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="textDataFimFocusGained"/>
+        <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="textDataFimFocusLost"/>
+      </Events>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTextField(&quot;Data do encerramento do compromisso&quot;)"/>
       </AuxValues>

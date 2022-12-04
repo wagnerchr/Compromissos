@@ -6,9 +6,9 @@ package view;
 
 
 import com.toedter.calendar.JDayChooser;
+import compromissos2.Compromisso;
 import compromissos2.Grupo;
 import compromissos2.connections.ConnectionFactory;
-import view.Login;
 import java.sql.PreparedStatement;
 import java.sql.Connection;
 import compromissos2.connections.UserConnection;
@@ -17,16 +17,22 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
+import javax.swing.JOptionPane;
 import javax.swing.DefaultListModel;
-import javax.swing.JOptionPane; 
+
 
 
 public class Home extends javax.swing.JFrame {
 
     static Usuario usuario;
     static ArrayList<Usuario> lista = new ArrayList<>();
+    static ArrayList<Compromisso> listaCompromissos = new ArrayList<>();
+    
     Connection conn;
     
     public Home(Usuario usuario) {
@@ -41,6 +47,7 @@ public class Home extends javax.swing.JFrame {
         
         this.usuario = usuario;
         
+        exibeCompromissos();
         exibeContatos();
         exibeGrupos();
         
@@ -51,13 +58,22 @@ public class Home extends javax.swing.JFrame {
         JDayChooser dayChooser = Calendario.getDayChooser();
         dayChooser.setAlwaysFireDayProperty(true); // here is the key
         
-        dayChooser.addPropertyChangeListener("day", (evt) -> {           
-               marcarCompromisso();   
+       
+        
+       dayChooser.addPropertyChangeListener("day", (evt) -> {           
+                
+            Date date = new Date();
+           
+            if( Calendario.getDate().compareTo(date) < 0 ) {
+                System.out.println("é menor essa data ai");
+            } else {
+                System.out.println(" é maior ");
+                marcarCompromisso();   
+            }            
         });
-        
-        
-    }
-    
+            
+    }    
+                     
      
     public String getId(Usuario usuario) throws SQLException {
                
@@ -79,11 +95,7 @@ public class Home extends javax.swing.JFrame {
    
     public ArrayList<Usuario> carregaContatos() {
         
-        
-       // ArrayList<Usuario> lista = new ArrayList<>();
-        
-        try {
-            
+        try {           
             ConnectionFactory cf = new ConnectionFactory();
             conn = cf.getConnection();
             conn.setAutoCommit(false);
@@ -124,7 +136,69 @@ public class Home extends javax.swing.JFrame {
         
         return lista;
     };
+    
+    private ArrayList<Compromisso> carregaCompromissos() {
+
+        try {
+            
+            ConnectionFactory cf = new ConnectionFactory();
+            conn = cf.getConnection();
+            conn.setAutoCommit(false);
+                     
+            String query = "SELECT * FROM compromisso WHERE id IN ( SELECT id_compromisso FROM pessoacompromisso WHERE id_pessoa = ?);";            
+            
+            int userId = Integer.valueOf(getId(usuario));
+                           
+            PreparedStatement ps = conn.prepareStatement(query);  
+            ps.setInt(1, userId);
+                     
+            ResultSet rs = ps.executeQuery();       
+                                     
+            while(rs.next()) {
+                
+                                      
+                Compromisso compromisso = new Compromisso(
+                        rs.getString("nome"),                                      
+                        rs.getString("descricao"),
+                        rs.getString("localc"),
+                        rs.getTimestamp("data_inicio").toLocalDateTime(),
+                        rs.getTimestamp("data_fim").toLocalDateTime()
+                );
+                              
+                listaCompromissos.add(compromisso);      
+            
+            }
+                    
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Erro em carregaCompromissos: " + ex);             
+        }
+                  
+        return listaCompromissos;
+    }
+    
       
+    private void exibeCompromissos() {
+    
+        DefaultListModel model = new DefaultListModel();
+        ArrayList<Compromisso> lista = carregaCompromissos();
+             
+        try {
+        
+            int count = 0;
+            while(lista.size() > count) {
+                model.addElement(lista.get(count).getNome());
+                count++;
+            }
+            
+            compromissos.setModel(model);
+            
+        } catch (Exception ex) {
+             JOptionPane.showMessageDialog(null, "Erro em exibeCompromissos: " + ex);
+        }
+    
+    
+    }
+    
     
     private void exibeContatos() {
         
@@ -159,8 +233,7 @@ public class Home extends javax.swing.JFrame {
                 model.addElement(lista.get(count).getNome());  
                 count++;
             }
-            
-            System.out.println("Essa é a lista de Grupos : " + lista);
+                    
             grupos.setModel(model);
                          
         } catch (Exception ex) {
@@ -225,13 +298,16 @@ public class Home extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jList1 = new javax.swing.JList<>();
         Calendario = new com.toedter.calendar.JCalendar();
         labelHello = new javax.swing.JLabel();
         jButton2 = new javax.swing.JButton();
         Lista = new javax.swing.JTabbedPane();
         jTabbedPane1 = new javax.swing.JTabbedPane();
-        jPanel4 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        JPanelLista = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        compromissos = new javax.swing.JList<>();
         jTabbedPane2 = new javax.swing.JTabbedPane();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -244,6 +320,13 @@ public class Home extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
 
+        jList1.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = {""};
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane3.setViewportView(jList1);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         labelHello.setText("Hello");
@@ -255,26 +338,27 @@ public class Home extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setText("jLabel1");
+        compromissos.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = {""};
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane4.setViewportView(compromissos);
 
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGap(119, 119, 119)
-                .addComponent(jLabel1)
-                .addContainerGap(251, Short.MAX_VALUE))
+        javax.swing.GroupLayout JPanelListaLayout = new javax.swing.GroupLayout(JPanelLista);
+        JPanelLista.setLayout(JPanelListaLayout);
+        JPanelListaLayout.setHorizontalGroup(
+            JPanelListaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 407, Short.MAX_VALUE)
         );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                .addGap(48, 48, 48)
-                .addComponent(jLabel1)
-                .addContainerGap(437, Short.MAX_VALUE))
+        JPanelListaLayout.setVerticalGroup(
+            JPanelListaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, JPanelListaLayout.createSequentialGroup()
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 495, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
-        jTabbedPane1.addTab("", jPanel4);
+        jTabbedPane1.addTab("", JPanelLista);
 
         Lista.addTab("Compromissos", jTabbedPane1);
 
@@ -484,19 +568,22 @@ public class Home extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private com.toedter.calendar.JCalendar Calendario;
+    private javax.swing.JPanel JPanelLista;
     private javax.swing.JTabbedPane Lista;
+    private javax.swing.JList<String> compromissos;
     private javax.swing.JList<String> contatos;
     private javax.swing.JList<String> grupos;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JList<String> jList1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTabbedPane jTabbedPane3;

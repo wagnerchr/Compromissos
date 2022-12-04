@@ -460,7 +460,7 @@ public class Cadastro extends javax.swing.JFrame {
     }//GEN-LAST:event_textSenhaConfirmFocusGained
 
     private void textSenhaConfirmFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_textSenhaConfirmFocusLost
-         if(textSenhaConfirm.getText().equals("")) {
+        if(textSenhaConfirm.getText().equals("")) {
             textSenhaConfirm.setText("Confirmar Senha");
             singlePlaceHolder(textSenhaConfirm);
         }
