@@ -7,6 +7,7 @@ import compromissos2.connections.ConnectionFactory;
 import compromissos2.connections.UserConnection;
 import java.awt.Color;
 import java.awt.Font;
+import java.lang.reflect.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -34,6 +35,8 @@ public class AddCompromisso extends javax.swing.JFrame {
     static DefaultListModel demoList = new DefaultListModel();
     static ArrayList<Usuario> lista = new ArrayList<>();
     static ConnectionFactory cf = new ConnectionFactory();
+    
+    // Contatos
     static ArrayList<Usuario> listaContatosAdd = new ArrayList<>();
     
     
@@ -61,7 +64,7 @@ public class AddCompromisso extends javax.swing.JFrame {
         if(day <= 9) 
             dayS = "0" + day;
         else 
-            dayS = "0" + day;
+            dayS = String.valueOf(day);
         
         this.setTitle("Compromisso para o dia: " + dayS + "/"  + month);
         
@@ -414,9 +417,8 @@ public class AddCompromisso extends javax.swing.JFrame {
                     dataFim                  
             );        
                 
-            InsereCompromissoBanco(compromisso);
-            
-           // InsereContatosCompromisso(compromisso);
+            InsereCompromissoBanco(compromisso);          
+            // InsereContatosCompromisso(compromisso);
            
         } catch(Exception e) {
             System.out.println(e);
@@ -502,10 +504,7 @@ public class AddCompromisso extends javax.swing.JFrame {
             ps.execute();
             conn.commit();
             ps.close();
-            
-            // CONECTAR CONTATOS
-            conectaContatos(compromisso);
-             
+              
             JOptionPane.showMessageDialog(null, "Compromisso adicionado com sucesso!");
             
             this.dispose();
@@ -548,13 +547,70 @@ public class AddCompromisso extends javax.swing.JFrame {
             }
         } 
     }//GEN-LAST:event_setHourActionPerformed
-    
+
+/*
     private void InsereContatosCompromisso(Compromisso compromisso) {
     
-    
+        ArrayList<Integer> contatosIds = new ArrayList<>();
+        ArrayList<String> nomes = new ArrayList<>();
+        
+        System.out.println(listContatos.getModel().getElementAt(0));
+        System.out.println( listaContatosAdd.get(0).getId() );
+        
+        for(int i = 0; i < listaContatosAdd.size(); i++) 
+            nomes.add(listaContatosAdd.get(i).getNome());
+                
+        for (int i = 0; i < listContatos.getModel().getSize(); i++) {
+
+            if( nomes.contains( listContatos.getModel().getElementAt(i) ) ) {
+
+                contatosIds.add( listaContatosAdd.get(i).getId() );
+            }
+        }
+            
+        InsereContatoBanco(compromisso, contatosIds);
     
     }
  
+    private void InsereContatoBanco(Compromisso compromisso, ArrayList<Integer> contatosIds) {
+    
+           
+       
+        
+        try {    
+            
+            ConnectionFactory cf = new ConnectionFactory();
+            conn = cf.getConnection();
+            conn.setAutoCommit(false);
+            
+            PreparedStatement ps;
+
+            String query = "INSERT INTO pessoacompromisso() VALUES(?, ?)";
+            
+            java.sql.Array array = conn.createArrayOf("VARCHAR", new Object[]{38, 39, 40});
+            
+            
+
+            
+            
+            ps = conn.prepareStatement(query);
+            
+            ps.setArray(1, array);
+            ps.setInt(2, compromisso.getId() );
+             
+            ps.execute();
+            conn.commit();
+            //ps.close();    
+            ps.close();
+
+        
+    }catch(SQLException ex) {
+            System.out.println(ex);
+    }
+    
+    }
+ */
+    
     private void labelStartMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelStartMouseClicked
         firstClick = true;
     }//GEN-LAST:event_labelStartMouseClicked
@@ -576,6 +632,7 @@ public class AddCompromisso extends javax.swing.JFrame {
       
     }//GEN-LAST:event_jButton3ActionPerformed
 
+    /*
     private void conectaContatos(Compromisso compromisso) {
     
          StringBuilder usuarios = new StringBuilder();
@@ -602,7 +659,7 @@ public class AddCompromisso extends javax.swing.JFrame {
               JOptionPane.showMessageDialog(null, "Erro em conectaContatos : " + ex.getMessage());
          }   
     
-    }
+    }*/
     
     
     
