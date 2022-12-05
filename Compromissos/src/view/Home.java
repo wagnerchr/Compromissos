@@ -306,7 +306,8 @@ public class Home extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     
     public void marcarCompromisso() {       
-      new AddCompromisso(usuario, Calendario.getDate()).setVisible(true);  
+        this.setVisible(false);
+        new AddCompromisso(usuario, Calendario.getDate()).setVisible(true);  
     }
     
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents

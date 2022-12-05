@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -38,14 +39,15 @@ public class AddCompromisso extends javax.swing.JFrame {
     public AddCompromisso(Usuario usuario, Date data) {
         
         initComponents();
-    
-        this.usuario = usuario;
-        this.date = data;
+      
         this.setBackground(Color.white);
         this.setResizable(false);
         this.setDefaultCloseOperation(this.DISPOSE_ON_CLOSE);
-
+        this.setLocationRelativeTo(null);         
         
+        this.usuario = usuario;
+        this.date = data;
+  
         // Título da janela: 
         
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Brazil/West"));           
@@ -387,10 +389,11 @@ public class AddCompromisso extends javax.swing.JFrame {
     
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         DateTimeFormatter formatterD = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
-        System.out.println("OLHA A DATA: " + labelStart.getText());
+      
+        
+        System.out.println( labelStart.getText() );
+        
         try {
         
             String nome, descricao, localc;
@@ -400,10 +403,11 @@ public class AddCompromisso extends javax.swing.JFrame {
             descricao = textDescricao.getText();
             localc = textNomeCompromisso.getText();
             
-            
-            
-            dataInicio = LocalDateTime.parse(labelStart.getText(), formatterD);
+   
+            dataInicio = LocalDateTime.parse( labelStart.getText(), formatterD);
             dataFim = LocalDateTime.parse(labelFinish.getText(), formatterD);
+            
+           
                  
             Compromisso compromisso = new Compromisso(
                     nome,
@@ -411,13 +415,10 @@ public class AddCompromisso extends javax.swing.JFrame {
                     localc,
                     dataInicio,
                     dataFim                  
-            );
-       
-            System.out.println("OLHA ELE EE EAA DAD AS :" + compromisso.getInicio());
+            );        
+                
             InsereCompromissoBanco(compromisso);
-        
-            this.setVisible(false);
-            
+           
         } catch(Exception e) {
             System.out.println(e);
         }
@@ -428,6 +429,10 @@ public class AddCompromisso extends javax.swing.JFrame {
                
         String query = "insert into compromisso() values(?, ?, ?, ?, ?, ?)";
         PreparedStatement ps;
+        
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            
+        
 
         try {                 
             ConnectionFactory cf = new ConnectionFactory();
@@ -440,8 +445,8 @@ public class AddCompromisso extends javax.swing.JFrame {
             ps.setString(2, compromisso.getNome());
             ps.setString(3, compromisso.getDescricao());
             ps.setString(4, compromisso.getLocalc());
-            ps.setString(5, String.valueOf(compromisso.getInicio()));
-            ps.setString(6, String.valueOf(compromisso.getFim()));
+            ps.setTimestamp(5, Timestamp.valueOf(compromisso.getInicio()));
+            ps.setTimestamp(6, Timestamp.valueOf(compromisso.getFim()));
            
                
             ps.execute();
@@ -500,6 +505,9 @@ public class AddCompromisso extends javax.swing.JFrame {
             ps.close();
              
             JOptionPane.showMessageDialog(null, "Compromisso adicionado com sucesso!");
+            
+            this.dispose();
+            new Home(usuario).setVisible(true);
              
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.getMessage());          
@@ -509,36 +517,34 @@ public class AddCompromisso extends javax.swing.JFrame {
     }
     
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        this.setVisible(false);
+        this.dispose();
+        new Home(usuario).setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void setHourActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setHourActionPerformed
          
         String time = timePicker.getSelectedTime();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat datafimFormat = new SimpleDateFormat("dd/MM/yyyy");
                      
-        if( firstClick ) {
+        if( firstClick ) {        
+            labelStart.setText( dateFormat.format(date) + " " + SqlData(time) );
+            firstClick = false;      
             
-            labelStart.setText(ConvertData(date) + " " + SqlData(time));
-            firstClick = false;
+        } else {      
+            try{
+            textDataFim.getText();
+            Date dataFim = datafimFormat.parse(textDataFim.getText());
+ 
+            labelFinish.setText( dateFormat.format(dataFim) + " " + SqlData(time) ); 
             
-        } else {
-              
-            try {
+        } catch (ParseException ex) {
                 
-                Date data_nasc = formatter.parse(textDataFim.getText());    
-                
-                String dataEnd = ConvertData(data_nasc);  
-
-                System.out.println(dataEnd);
-                labelFinish.setText(dataEnd + " " + SqlData(time));
-                
-            } catch(ParseException err) {
-                System.out.println(err);
-            }       
-        }
-                
+                JOptionPane.showMessageDialog(null, ex.getMessage());
+            }
+        } 
     }//GEN-LAST:event_setHourActionPerformed
-
+    
  
     private void labelStartMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelStartMouseClicked
         firstClick = true;

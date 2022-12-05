@@ -31,9 +31,7 @@ public class VerCompromisso extends javax.swing.JFrame {
         
         this.compromisso = compromisso;
         this.usuario = usuario;
-        
-        
-        System.out.println("DIASIDAS NDUASND JIASDONAD ID : " + compromisso.getId());
+          
         this.setLocationRelativeTo(null);  
         this.setResizable(false);
         this.setDefaultCloseOperation(0);    
@@ -80,6 +78,7 @@ public class VerCompromisso extends javax.swing.JFrame {
             localc = textLocal.getText();
             
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            
             LocalDateTime inicio = LocalDateTime.parse(textInicio.getText(), formatter);
             LocalDateTime fim = LocalDateTime.parse(textFim.getText(), formatter);
      
