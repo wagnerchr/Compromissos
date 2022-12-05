@@ -43,8 +43,8 @@ public class AddCompromisso extends javax.swing.JFrame {
       
         this.setBackground(Color.white);
         this.setResizable(false);
-        this.setDefaultCloseOperation(this.DISPOSE_ON_CLOSE);
-        this.setLocationRelativeTo(null);         
+        this.setLocationRelativeTo(null);    
+        this.setDefaultCloseOperation(0);  
         
         this.usuario = usuario;
         this.date = data;
@@ -116,7 +116,9 @@ public class AddCompromisso extends javax.swing.JFrame {
 
             try {            
                 int count = 0;
-                while(lista.size() > count) {                           
+                while(lista.size() > count) {       
+                    
+                    listaContatosAdd.add(lista.get(count));
                     comboboxContatos.addItem(lista.get(count).getNome());               
                     count++;
                 }                         
@@ -413,6 +415,8 @@ public class AddCompromisso extends javax.swing.JFrame {
             );        
                 
             InsereCompromissoBanco(compromisso);
+            
+           // InsereContatosCompromisso(compromisso);
            
         } catch(Exception e) {
             System.out.println(e);
@@ -545,6 +549,11 @@ public class AddCompromisso extends javax.swing.JFrame {
         } 
     }//GEN-LAST:event_setHourActionPerformed
     
+    private void InsereContatosCompromisso(Compromisso compromisso) {
+    
+    
+    
+    }
  
     private void labelStartMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelStartMouseClicked
         firstClick = true;
@@ -564,11 +573,7 @@ public class AddCompromisso extends javax.swing.JFrame {
         demoList.addElement(comboboxContatos.getSelectedItem());
         comboboxContatos.removeItem(comboboxContatos.getSelectedItem());
         listContatos.setModel(demoList);
-
-        
-        listaContatosAdd.add( lista.get(comboboxContatos.getSelectedIndex() ) );       
-        //adionaContatoCompromisso(compromisso);
-        
+      
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void conectaContatos(Compromisso compromisso) {
