@@ -30,11 +30,6 @@ public class VerContato extends javax.swing.JFrame {
         
         initComponents();
         
-        
-        
-
-       
-
         this.contato = contato;
         this.usuario = usuario;   
         
@@ -42,7 +37,6 @@ public class VerContato extends javax.swing.JFrame {
         this.setResizable(false);
         this.setDefaultCloseOperation(0);
      
-        
         campos.addAll(Arrays.asList(      
                 textNome,
                 textData_nasc,
@@ -224,9 +218,6 @@ public class VerContato extends javax.swing.JFrame {
             corregaTexto(campos, edit);
             btnEdit.setText("Editar");           
         }
-        
-        
-  
     }//GEN-LAST:event_btnEditActionPerformed
 
 // EXCLUIR CONTATO

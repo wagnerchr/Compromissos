@@ -25,8 +25,9 @@ public class Home extends javax.swing.JFrame {
 
     static Usuario usuario;
     
-    static ArrayList<Usuario> lista = new ArrayList<>();
     static ArrayList<Compromisso> listaCompromissos = new ArrayList<>();
+    static ArrayList<Usuario> listaContatos = new ArrayList<>();
+    static ArrayList<Grupo> listaGrupos = new ArrayList<>();
     
     Connection conn;
     
@@ -161,17 +162,17 @@ public class Home extends javax.swing.JFrame {
                 
                  System.out.println("A data é assim : :: :: " + contato.getData_nasc());
                 
-                if(lista.contains(contato)) 
+                if(listaContatos.contains(contato)) 
                     System.out.println("Já tem");
                 else
-                    lista.add(contato);      
+                    listaContatos.add(contato);      
             }
                                   
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "Erro em carregaContatos: " + ex);
         }
         
-        return lista;
+        return listaContatos;
     };
 //
     
@@ -203,17 +204,18 @@ public class Home extends javax.swing.JFrame {
                                                  
                 Grupo grupo = new Grupo(
                     rs.getString("nome"),
+                    rs.getInt("id"),
                     rs.getString("descricao")                                                         
                 );
                 
-                lista.add(grupo);      
+                listaGrupos.add(grupo);      
             }
                                   
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "Erro em carregaContatos: " + ex);
         }
         
-        return lista;
+        return listaGrupos;
     };    
 //
     
@@ -253,7 +255,7 @@ public class Home extends javax.swing.JFrame {
     private void exibeContatos() {
         
         DefaultListModel model = new DefaultListModel();
-        lista.clear();
+        listaContatos.clear();
         
         ArrayList<Usuario> lista = carregaContatos(); 
              
@@ -280,8 +282,9 @@ public class Home extends javax.swing.JFrame {
      private void exibeGrupos() {
         
         DefaultListModel model = new DefaultListModel();
+        listaGrupos.clear();
         ArrayList<Grupo> lista = carregaGrupos();  
-            
+        
         try {
              
             int count = 0;
@@ -515,7 +518,7 @@ public class Home extends javax.swing.JFrame {
         
         this.setVisible(false);    
         
-        VerContato vercontato = new VerContato(lista.get(contatos.getAnchorSelectionIndex()), usuario);
+        VerContato vercontato = new VerContato(listaContatos.get(contatos.getAnchorSelectionIndex()), usuario);
         vercontato.setVisible(true);
                 
      
@@ -546,12 +549,12 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_compromissosMouseClicked
 
     private void gruposMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_gruposMouseClicked
-        /*
+       
         this.setVisible(false);    
         
-        VerGrupos vergrupos = new VerGrupos(lista.get(compromissos.getAnchorSelectionIndex()), usuario);
-        vercompromisso.setVisible(true);
-        */
+        VerGrupos vergrupos = new VerGrupos(listaGrupos.get(grupos.getAnchorSelectionIndex()), usuario);
+        vergrupos.setVisible(true);
+        
     }//GEN-LAST:event_gruposMouseClicked
 
     private void dayChooser(java.awt.event.ActionEvent evt) {
