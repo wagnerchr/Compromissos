@@ -83,6 +83,7 @@ public class Home extends javax.swing.JFrame {
                
             else 
                 JOptionPane.showMessageDialog(null, "Problema ao estabelecer conexão com o usuário");
+        
         return idUsuario;
     }
  
@@ -146,9 +147,7 @@ public class Home extends javax.swing.JFrame {
                      
             ResultSet rs = ps.executeQuery();            
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-            
-            
-            
+                                  
             while(rs.next()) {
                                             
                 Usuario contato = new Usuario(
@@ -159,8 +158,7 @@ public class Home extends javax.swing.JFrame {
                         rs.getString("telefone"),
                         rs.getString("email")                      
                 );
-                
-                 System.out.println("A data é assim : :: :: " + contato.getData_nasc());
+                         
                 
                 if(listaContatos.contains(contato)) 
                     System.out.println("Já tem");
@@ -189,15 +187,13 @@ public class Home extends javax.swing.JFrame {
             conn.setAutoCommit(false);
                      
             String query = "SELECT * FROM grupo g WHERE g.id IN ( SELECT id_grupo FROM pessoagrupo pc WHERE pc.id_pessoa = ?)";
-            
-            
+                        
             int userId = Integer.valueOf(getId(usuario));
                   
            
             PreparedStatement ps = conn.prepareStatement(query);  
             ps.setInt(1, userId);
-          
-             
+                       
             ResultSet rs = ps.executeQuery();            
            
             while(rs.next()) {

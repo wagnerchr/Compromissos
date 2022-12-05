@@ -5,14 +5,19 @@ import compromissos2.Compromisso;
 import compromissos2.Usuario;
 import compromissos2.connections.ConnectionFactory;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import static view.Home.listaContatos;
+import static view.Home.usuario;
 import static view.VerContato.campos;
 import static view.VerContato.contato;
 
@@ -58,6 +63,9 @@ public class VerCompromisso extends javax.swing.JFrame {
         
      
         carregaTexto(campos, edit);
+        
+        // Latter
+        //carregaContatos(compromisso, usuario);
     }
 
     public void carregaTexto(ArrayList<JTextField> campos, Boolean e) {
@@ -65,6 +73,82 @@ public class VerCompromisso extends javax.swing.JFrame {
         for(int i = 0; i < campos.size(); i++) 
             campos.get(i).setEnabled(e);                
     }
+    
+    
+    /* LATTER LATTER LATTER LATTER LATTER LATTER 
+    
+    public void carregaContatos(Compromisso compromisso, Usuario usuario) {
+         
+        DefaultListModel model = new DefaultListModel();
+   
+        ArrayList<Usuario> lista = buscaContatos(); 
+             
+        try {
+             
+            int count = 0;
+            while(lista.size() > count) {
+                model.addElement(lista.get(count).getNome());  
+                count++;
+            }
+                
+            contatos.setModel(model);
+           
+                         
+        } catch (Exception ex) {
+             JOptionPane.showMessageDialog(null, "Erro em exibeContatos: " + ex);
+        }
+        
+    }
+    */
+    
+    /* LATTER LATTER LATTER LATTER LATTER LATTER LATTER 
+    
+    
+    private ArrayList<Usuario> buscaContatos() {
+    
+        try {    
+            
+            ConnectionFactory cf = new ConnectionFactory();
+            conn = cf.getConnection();
+            conn.setAutoCommit(false);
+                     
+            String query = "SELECT * FROM pessoa p WHERE p.id IN ( SELECT id_contato FROM pessoacontato pc WHERE pc.id_pessoa = ?)";
+                    
+            int userId = Integer.valueOf(getId(usuario));
+                           
+            PreparedStatement ps = conn.prepareStatement(query);  
+            ps.setInt(1, userId);
+                     
+            ResultSet rs = ps.executeQuery();            
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                                  
+            while(rs.next()) {
+                                            
+                Usuario contato = new Usuario(
+                        rs.getString("nome"),
+                        rs.getInt("id"),                 
+                        rs.getDate("data_nasc"),                        
+                        rs.getString("endereco"),
+                        rs.getString("telefone"),
+                        rs.getString("email")                      
+                );
+                
+                 System.out.println("A data é assim : :: :: " + contato.getData_nasc());
+                
+                if(listaContatos.contains(contato)) 
+                    System.out.println("Já tem");
+                else
+                    listaContatos.add(contato);      
+            }
+                                  
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Erro em carregaContatos: " + ex);
+        }
+        
+        return listaContatos;
+    
+    } */
+    
     
     private void editarCompromisso(Compromisso compromisso) {
     
@@ -91,9 +175,7 @@ public class VerCompromisso extends javax.swing.JFrame {
                     fim
             );
             
-            System.out.println("NOME FICOU ASSIM : " + compromissoEdit.getNome() );
-              
-            
+ 
             InsereCompromissoBanco(compromissoEdit);
             
             this.setVisible(false);
@@ -155,7 +237,7 @@ public class VerCompromisso extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
+        listContatos = new javax.swing.JList<>();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -199,12 +281,12 @@ public class VerCompromisso extends javax.swing.JFrame {
             }
         });
 
-        jList1.setModel(new javax.swing.AbstractListModel<String>() {
+        listContatos.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = {""};
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
-        jScrollPane1.setViewportView(jList1);
+        jScrollPane1.setViewportView(listContatos);
 
         jLabel1.setText("Contatos adicionados: ");
 
@@ -411,8 +493,8 @@ public class VerCompromisso extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JList<String> jList1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JList<String> listContatos;
     private javax.swing.JTextField textDescricao;
     private javax.swing.JTextField textFim;
     private javax.swing.JTextField textInicio;

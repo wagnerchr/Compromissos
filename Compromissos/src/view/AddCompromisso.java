@@ -34,6 +34,7 @@ public class AddCompromisso extends javax.swing.JFrame {
     static DefaultListModel demoList = new DefaultListModel();
     static ArrayList<Usuario> lista = new ArrayList<>();
     static ConnectionFactory cf = new ConnectionFactory();
+    static ArrayList<Usuario> listaContatosAdd = new ArrayList<>();
     
     
     public AddCompromisso(Usuario usuario, Date data) {
@@ -72,7 +73,8 @@ public class AddCompromisso extends javax.swing.JFrame {
                 textDataFim
                 
         ));
-
+        
+        listaContatosAdd.clear();
         exibeContatos();
         timePicker.getSelectedTime();     
         startPlaceHolders(campos);
@@ -109,6 +111,7 @@ public class AddCompromisso extends javax.swing.JFrame {
     private void exibeContatos() {
 
             DefaultListModel model = new DefaultListModel();
+           
             ArrayList<Usuario> lista = carregaContatos(); 
 
             try {            
@@ -151,8 +154,7 @@ public class AddCompromisso extends javax.swing.JFrame {
                         rs.getString("telefone"),
                         rs.getString("email")                      
                 );
-
-                 System.out.println(contato.getNome());
+  
                 lista.add(contato);      
             }
 
@@ -379,14 +381,7 @@ public class AddCompromisso extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
     Connection conn;
-    
-    
-    
 
-   
-    
-    
-    
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         
         DateTimeFormatter formatterD = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -503,6 +498,9 @@ public class AddCompromisso extends javax.swing.JFrame {
             ps.execute();
             conn.commit();
             ps.close();
+            
+            // CONECTAR CONTATOS
+            conectaContatos(compromisso);
              
             JOptionPane.showMessageDialog(null, "Compromisso adicionado com sucesso!");
             
@@ -515,6 +513,8 @@ public class AddCompromisso extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, ex.getMessage());
         }
     }
+    
+
     
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         this.dispose();
@@ -564,9 +564,43 @@ public class AddCompromisso extends javax.swing.JFrame {
         demoList.addElement(comboboxContatos.getSelectedItem());
         comboboxContatos.removeItem(comboboxContatos.getSelectedItem());
         listContatos.setModel(demoList);
+
+        
+        listaContatosAdd.add( lista.get(comboboxContatos.getSelectedIndex() ) );       
+        //adionaContatoCompromisso(compromisso);
         
     }//GEN-LAST:event_jButton3ActionPerformed
 
+    private void conectaContatos(Compromisso compromisso) {
+    
+         StringBuilder usuarios = new StringBuilder();
+         String comma="";
+         
+         for (Usuario u: listaContatosAdd) {
+                usuarios.append(comma);
+                usuarios.append(u.getId());
+                comma = ", ";
+        }
+
+        try {
+        String query = "INSERT INTO pessoacompromisso() VALUES(?, ?)";
+        PreparedStatement ps = conn.prepareStatement(query);
+        ps.setInt(1, compromisso.getId());
+        ps.setString(2, usuarios.toString() );
+
+        ps.execute();
+        conn.commit();
+        ps.close();
+         
+         
+         } catch(SQLException ex) {
+              JOptionPane.showMessageDialog(null, "Erro em conectaContatos : " + ex.getMessage());
+         }   
+    
+    }
+    
+    
+    
     private void textNomeCompromissoFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_textNomeCompromissoFocusGained
         if(textNomeCompromisso.getText().equals("Nome do Compromisso"))
             textNomeCompromisso.setText("");
@@ -628,6 +662,7 @@ public class AddCompromisso extends javax.swing.JFrame {
             Date data_fim = formatter.parse( textDataFim.getText());  
             labelFinish.setText( ConvertData(data_fim) + " " + horario);
         }
+        
         return horario;
         
         } catch (ParseException ex) {
