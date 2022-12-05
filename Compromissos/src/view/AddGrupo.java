@@ -137,7 +137,8 @@ public class AddGrupo extends javax.swing.JFrame {
             
             InsereGrupoBanco(grupo);
             
-            this.setVisible(false);
+            this.dispose();
+            new Home(usuario).setVisible(true);
 
         } catch(Exception e) {
             System.out.println(e);

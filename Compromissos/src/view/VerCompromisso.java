@@ -14,6 +14,7 @@ import java.util.Arrays;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import static view.VerContato.campos;
+import static view.VerContato.contato;
 
 
 public class VerCompromisso extends javax.swing.JFrame {
@@ -23,7 +24,7 @@ public class VerCompromisso extends javax.swing.JFrame {
     
     static Boolean edit = false;
     
-    
+    //int reply = JOptionPane.showConfirmDialog(null, "123", "231", JOptionPane.YES_NO_OPTION);
     public VerCompromisso(Compromisso compromisso, Usuario usuario) {
         
         initComponents();
@@ -31,8 +32,11 @@ public class VerCompromisso extends javax.swing.JFrame {
         this.compromisso = compromisso;
         this.usuario = usuario;
         
-        this.setLocationRelativeTo(null);
-        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        
+        System.out.println("DIASIDAS NDUASND JIASDONAD ID : " + compromisso.getId());
+        this.setLocationRelativeTo(null);  
+        this.setResizable(false);
+        this.setDefaultCloseOperation(0);    
         
         
         textNome.setText(compromisso.getNome());
@@ -183,8 +187,18 @@ public class VerCompromisso extends javax.swing.JFrame {
         });
 
         jButton2.setText("Voltar");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("Escluir Compromisso");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         jList1.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = {""};
@@ -288,6 +302,76 @@ public class VerCompromisso extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnEditActionPerformed
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+       this.setVisible(false);
+       new Home(usuario).setVisible(true);
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        
+        int dialogResult = JOptionPane.showConfirmDialog(this, "Quer mesmo excluir este compromisso?", "Excluir compromisso", JOptionPane.YES_NO_OPTION);
+       
+        if(dialogResult == 0) 
+            excluirCompromisso(compromisso);
+        else 
+             System.exit(0);
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void excluirCompromisso(Compromisso compromisso) {
+    
+        String query = "DELETE FROM pessoacompromisso WHERE id_compromisso = ?";       
+        PreparedStatement ps;
+        
+        try {
+            ConnectionFactory cf = new ConnectionFactory();
+            conn = cf.getConnection();
+            conn.setAutoCommit(false);
+            
+            ps = conn.prepareStatement(query);
+            
+            ps.setInt(1, compromisso.getId());
+         
+            ps.executeUpdate();   
+            conn.commit();
+            ps.close();
+            
+            excluirLigacao(compromisso);
+                      
+        } catch(SQLException ex){
+            JOptionPane.showMessageDialog(null, "Erro em excluirCompromisso: " + ex.getMessage());
+        
+        }   
+    }
+    
+    private void excluirLigacao(Compromisso compromisso) {
+    
+        String query = "DELETE FROM compromisso WHERE id = ?";
+        PreparedStatement ps;
+        
+        try {
+            ConnectionFactory cf = new ConnectionFactory();
+            conn = cf.getConnection();
+            conn.setAutoCommit(false);
+            
+            ps = conn.prepareStatement(query);
+            
+            ps.setInt(1, compromisso.getId());     
+            
+            ps.executeUpdate();               
+            conn.commit();
+            ps.close();
+                        
+            JOptionPane.showMessageDialog(null, "Compromisso Excluído!");
+            this.dispose();
+            new Home(usuario).setVisible(true);
+            
+        } catch(SQLException ex){
+            JOptionPane.showMessageDialog(null, "Erro em excluirLigacao: " + ex.getMessage());
+        
+        }     
+    }
+    
+       
     /**
      * @param args the command line arguments
      */

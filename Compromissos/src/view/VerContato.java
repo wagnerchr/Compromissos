@@ -1,5 +1,6 @@
 package view;
 
+import com.mysql.cj.conf.PropertyKey;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import compromissos2.Usuario;
@@ -22,7 +23,6 @@ public class VerContato extends javax.swing.JFrame {
     static Usuario usuario;
     
     static Boolean edit = false;
-    
     static ArrayList<JTextField> campos = new ArrayList<>();
     
     
@@ -30,11 +30,17 @@ public class VerContato extends javax.swing.JFrame {
         
         initComponents();
         
-        this.contato = contato;
-        this.usuario = usuario;
         
-        this.setLocationRelativeTo(null);
-        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        
+
+       
+
+        this.contato = contato;
+        this.usuario = usuario;   
+        
+        this.setLocationRelativeTo(null);         
+        this.setResizable(false);
+        this.setDefaultCloseOperation(0);
      
         
         campos.addAll(Arrays.asList(      
@@ -72,7 +78,10 @@ public class VerContato extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         btnEdit = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        setModalExclusionType(java.awt.Dialog.ModalExclusionType.APPLICATION_EXCLUDE);
+        setResizable(false);
 
         jLabel1.setText("jLabel1");
 
@@ -84,6 +93,11 @@ public class VerContato extends javax.swing.JFrame {
         });
 
         jButton2.setText("Excluir Contato");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         btnEdit.setText("Editar");
         btnEdit.addActionListener(new java.awt.event.ActionListener() {
@@ -191,7 +205,8 @@ public class VerContato extends javax.swing.JFrame {
 //
     
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-       this.setVisible(false);
+       this.dispose();
+       new Home(usuario).setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
@@ -213,6 +228,17 @@ public class VerContato extends javax.swing.JFrame {
         
   
     }//GEN-LAST:event_btnEditActionPerformed
+
+// EXCLUIR CONTATO
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+          
+        int dialogResult = JOptionPane.showConfirmDialog(this, "Your Message", "Title on Box", JOptionPane.YES_NO_OPTION);
+       
+        if(dialogResult == 0) 
+            excluirContato(contato);
+        else 
+             System.exit(0);
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     private void editarContato(Usuario contato) {
         
@@ -250,6 +276,61 @@ public class VerContato extends javax.swing.JFrame {
         } catch(Exception ex) {        
             JOptionPane.showMessageDialog(null, "Erro em EditaContato: " + ex.getMessage());
         }  
+    }
+    
+    public void excluirContato(Usuario contato) {
+    
+        String query = "DELETE FROM pessoa WHERE id = ?"; 
+        
+        PreparedStatement ps;
+        
+        try {
+            ConnectionFactory cf = new ConnectionFactory();
+            conn = cf.getConnection();
+            conn.setAutoCommit(false);
+            
+            ps = conn.prepareStatement(query);
+            
+            ps.setInt(1, contato.getId());
+         
+            ps.executeUpdate();   
+            conn.commit();
+            ps.close();
+            
+            excluirLigacao(contato);
+                      
+        } catch(SQLException ex){
+            JOptionPane.showMessageDialog(null, "Erro em excluirContato: " + ex.getMessage());
+        
+        } 
+    }
+    
+    public void excluirLigacao(Usuario contato) {
+        
+        String query = "DELETE FROM pessoacontato WHERE id_contato = ?";
+        PreparedStatement ps;
+        
+        try {
+            ConnectionFactory cf = new ConnectionFactory();
+            conn = cf.getConnection();
+            conn.setAutoCommit(false);
+            
+            ps = conn.prepareStatement(query);
+            
+            ps.setInt(1, contato.getId());     
+            
+            ps.executeUpdate();               
+            conn.commit();
+            ps.close();
+                        
+            JOptionPane.showMessageDialog(null, "Usuario Excluído!");
+            this.dispose();
+            new Home(usuario).setVisible(true);
+            
+        } catch(SQLException ex){
+            JOptionPane.showMessageDialog(null, "Erro em excluirLigacao: " + ex.getMessage());
+        
+        } 
     }
     
     public void InsereContatoBanco(Usuario contatoEdit) {

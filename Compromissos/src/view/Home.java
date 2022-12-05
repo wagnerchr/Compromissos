@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.DefaultListModel;
+import static view.VerContato.contato;
 
 
 
@@ -33,23 +34,27 @@ public class Home extends javax.swing.JFrame {
         
         initComponents();
         
+        
+        // Window
+            this.setLocationRelativeTo(null);         
+            this.setResizable(false);
+            this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
+            labelHello.setText("Hello, " + usuario.getNome());
+        //
+         
+        
         this.usuario = usuario;
         
         exibeCompromissos();
         exibeContatos();
         exibeGrupos();
-        
-        this.setLocationRelativeTo(null);             
-        labelHello.setText("Hello, " + usuario.getNome());
-        
+    
         // Onclick Calendário
         JDayChooser dayChooser = Calendario.getDayChooser();
         dayChooser.setAlwaysFireDayProperty(true); // here is the key
-        
-       
-        
-       dayChooser.addPropertyChangeListener("day", (evt) -> {           
+ 
+        dayChooser.addPropertyChangeListener("day", (evt) -> {           
                 
             Date date = new Date();
            
@@ -79,9 +84,51 @@ public class Home extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Problema ao estabelecer conexão com o usuário");
         return idUsuario;
     }
+ 
+// CARREGAR COMPROMISSOS
+    private ArrayList<Compromisso> carregaCompromissos() {
+
+        try {
+            
+            ConnectionFactory cf = new ConnectionFactory();
+            conn = cf.getConnection();
+            conn.setAutoCommit(false);
+                     
+            String query = "SELECT * FROM compromisso WHERE id IN ( SELECT id_compromisso FROM pessoacompromisso WHERE id_pessoa = ?);";            
+            
+            int userId = Integer.valueOf(getId(usuario));
+                           
+            PreparedStatement ps = conn.prepareStatement(query);  
+            ps.setInt(1, userId);
+                     
+            ResultSet rs = ps.executeQuery();       
+                                     
+            while(rs.next()) {
+                
+                                      
+                Compromisso compromisso = new Compromisso(
+                        rs.getString("nome"),   
+                        rs.getInt("id"),
+                        rs.getString("descricao"),
+                        rs.getString("localc"),
+                        rs.getTimestamp("data_inicio").toLocalDateTime(),
+                        rs.getTimestamp("data_fim").toLocalDateTime()
+                );
+                              
+                listaCompromissos.add(compromisso);      
+            
+            }
+                    
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Erro em carregaCompromissos: " + ex);             
+        }
+                  
+        return listaCompromissos;
+    }    
+//
     
-    // ResultSet para trazer info do banco
-   
+    
+// CARREGAR CONTATOS 
     public ArrayList<Usuario> carregaContatos() {
         
         try {           
@@ -126,120 +173,9 @@ public class Home extends javax.swing.JFrame {
         
         return lista;
     };
+//
     
-    private ArrayList<Compromisso> carregaCompromissos() {
-
-        try {
-            
-            ConnectionFactory cf = new ConnectionFactory();
-            conn = cf.getConnection();
-            conn.setAutoCommit(false);
-                     
-            String query = "SELECT * FROM compromisso WHERE id IN ( SELECT id_compromisso FROM pessoacompromisso WHERE id_pessoa = ?);";            
-            
-            int userId = Integer.valueOf(getId(usuario));
-                           
-            PreparedStatement ps = conn.prepareStatement(query);  
-            ps.setInt(1, userId);
-                     
-            ResultSet rs = ps.executeQuery();       
-                                     
-            while(rs.next()) {
-                
-                                      
-                Compromisso compromisso = new Compromisso(
-                        rs.getString("nome"),   
-                        rs.getInt("id"),
-                        rs.getString("descricao"),
-                        rs.getString("localc"),
-                        rs.getTimestamp("data_inicio").toLocalDateTime(),
-                        rs.getTimestamp("data_fim").toLocalDateTime()
-                );
-                              
-                listaCompromissos.add(compromisso);      
-            
-            }
-                    
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(null, "Erro em carregaCompromissos: " + ex);             
-        }
-                  
-        return listaCompromissos;
-    }
-    
-      
-    private void exibeCompromissos() {
-    
-        DefaultListModel model = new DefaultListModel();
-        listaCompromissos.clear();
-        
-        ArrayList<Compromisso> lista = carregaCompromissos();
-             
-        try {
-        
-            int count = 0;
-            while(lista.size() > count) {
-                model.addElement(lista.get(count).getNome());
-                count++;
-            }
-            
-            
-            compromissos.setModel(model);
-            
-        } catch (Exception ex) {
-             JOptionPane.showMessageDialog(null, "Erro em exibeCompromissos: " + ex);
-        }
-    
-    
-    }
-    
-    
-    private void exibeContatos() {
-        
-        DefaultListModel model = new DefaultListModel();
-        lista.clear();
-        
-        ArrayList<Usuario> lista = carregaContatos(); 
-             
-        try {
-             
-            int count = 0;
-            while(lista.size() > count) {
-                model.addElement(lista.get(count).getNome());  
-                count++;
-            }
-                
-            contatos.setModel(model);
-           
-                         
-        } catch (Exception ex) {
-             JOptionPane.showMessageDialog(null, "Erro em exibeContatos: " + ex);
-        }
-    
-    }
-    
-     private void exibeGrupos() {
-        
-        DefaultListModel model = new DefaultListModel();
-        ArrayList<Grupo> lista = carregaGrupos();  
-            
-        try {
-             
-            int count = 0;
-            while(lista.size() > count) {
-                model.addElement(lista.get(count).getNome());  
-                count++;
-            }
-                    
-            grupos.setModel(model);
-                         
-        } catch (Exception ex) {
-             JOptionPane.showMessageDialog(null, "Erro em exibeContatos: " + ex);
-        }
-    
-    }
-
-// Carregar lista de grupos do usuário
+// CARREGAR GRUPOS
      public ArrayList<Grupo> carregaGrupos() {
         
         
@@ -278,10 +214,92 @@ public class Home extends javax.swing.JFrame {
         }
         
         return lista;
-    };
+    };    
+//
     
-
+     
+// -- EXIBIR --
+  
+     
+// EXIBIR COPMPROMISSOS
+    private void exibeCompromissos() {
     
+        DefaultListModel model = new DefaultListModel();
+        listaCompromissos.clear();
+        
+        ArrayList<Compromisso> lista = carregaCompromissos();
+             
+        try {
+        
+            int count = 0;
+            while(lista.size() > count) {
+                model.addElement(lista.get(count).getNome());
+                count++;
+            }
+            
+            
+            compromissos.setModel(model);
+            
+        } catch (Exception ex) {
+             JOptionPane.showMessageDialog(null, "Erro em exibeCompromissos: " + ex);
+        }
+    
+    
+    }
+//
+    
+    
+// EXIBIR CONTATOS
+    private void exibeContatos() {
+        
+        DefaultListModel model = new DefaultListModel();
+        lista.clear();
+        
+        ArrayList<Usuario> lista = carregaContatos(); 
+             
+        try {
+             
+            int count = 0;
+            while(lista.size() > count) {
+                model.addElement(lista.get(count).getNome());  
+                count++;
+            }
+                
+            contatos.setModel(model);
+           
+                         
+        } catch (Exception ex) {
+             JOptionPane.showMessageDialog(null, "Erro em exibeContatos: " + ex);
+        }
+    
+    }
+//
+    
+    
+// EXIBIR GRUPOS 
+     private void exibeGrupos() {
+        
+        DefaultListModel model = new DefaultListModel();
+        ArrayList<Grupo> lista = carregaGrupos();  
+            
+        try {
+             
+            int count = 0;
+            while(lista.size() > count) {
+                model.addElement(lista.get(count).getNome());  
+                count++;
+            }
+                    
+            grupos.setModel(model);
+                         
+        } catch (Exception ex) {
+             JOptionPane.showMessageDialog(null, "Erro em exibeContatos: " + ex);
+        }
+    
+    }
+//
+   
+  
     @SuppressWarnings("unchecked")
     
     public void marcarCompromisso() {       
@@ -295,7 +313,6 @@ public class Home extends javax.swing.JFrame {
         jList1 = new javax.swing.JList<>();
         Calendario = new com.toedter.calendar.JCalendar();
         labelHello = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
         Lista = new javax.swing.JTabbedPane();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         JPanelLista = new javax.swing.JPanel();
@@ -323,13 +340,6 @@ public class Home extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         labelHello.setText("Hello");
-
-        jButton2.setText("Marcar Compromisso");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
 
         compromissos.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = {""};
@@ -407,6 +417,11 @@ public class Home extends javax.swing.JFrame {
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
+        grupos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                gruposMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(grupos);
 
         jButton3.setText("Criar Grupo");
@@ -458,14 +473,13 @@ public class Home extends javax.swing.JFrame {
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jButton4)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jButton4))
+                            .addGroup(layout.createSequentialGroup()
                                 .addComponent(Calendario, javax.swing.GroupLayout.PREFERRED_SIZE, 750, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(221, 221, 221))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
-                        .addComponent(Lista, javax.swing.GroupLayout.PREFERRED_SIZE, 407, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
+                                .addComponent(Lista, javax.swing.GroupLayout.PREFERRED_SIZE, 407, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addContainerGap(30, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
@@ -479,9 +493,7 @@ public class Home extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(Calendario, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(6, 6, 6))
+                        .addGap(51, 51, 51))
                     .addComponent(Lista, javax.swing.GroupLayout.PREFERRED_SIZE, 567, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(27, Short.MAX_VALUE))
         );
@@ -494,13 +506,8 @@ public class Home extends javax.swing.JFrame {
         new AddContato(usuario).setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-      
-        new AddCompromisso(usuario, Calendario.getDate()).setVisible(true);
-    
-    }//GEN-LAST:event_jButton2ActionPerformed
-
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        this.setVisible(false);
         new AddGrupo(usuario).setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
 
@@ -516,12 +523,19 @@ public class Home extends javax.swing.JFrame {
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         
-        new Login().pref.putBoolean("rememberMe", false);
+        int dialogResult = JOptionPane.showConfirmDialog(this, "Desabilitar Login Automático?", "Fazer Logoff", JOptionPane.YES_NO_OPTION);
+       
+        if(dialogResult == 0) {
+              new Login().pref.putBoolean("rememberMe", false);
       
-        this.dispose(); 
-        this.setVisible(false);
-         //login.rememberMe();
-              
+            this.dispose(); 
+            this.setVisible(false);     
+            
+            JOptionPane.showConfirmDialog(this, "Próximo login, a conta não será lembrada", "Avisso", JOptionPane.OK_OPTION);
+        }          
+        
+           
+         //login.rememberMe();             
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void compromissosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_compromissosMouseClicked
@@ -530,6 +544,15 @@ public class Home extends javax.swing.JFrame {
         VerCompromisso vercompromisso = new VerCompromisso(listaCompromissos.get(compromissos.getAnchorSelectionIndex()), usuario);
         vercompromisso.setVisible(true);
     }//GEN-LAST:event_compromissosMouseClicked
+
+    private void gruposMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_gruposMouseClicked
+        /*
+        this.setVisible(false);    
+        
+        VerGrupos vergrupos = new VerGrupos(lista.get(compromissos.getAnchorSelectionIndex()), usuario);
+        vercompromisso.setVisible(true);
+        */
+    }//GEN-LAST:event_gruposMouseClicked
 
     private void dayChooser(java.awt.event.ActionEvent evt) {
         System.out.println(Calendario.getDate());
@@ -574,9 +597,6 @@ public class Home extends javax.swing.JFrame {
             }
         });
     }
-    
-    
-    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private com.toedter.calendar.JCalendar Calendario;
@@ -586,7 +606,6 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JList<String> contatos;
     private javax.swing.JList<String> grupos;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JList<String> jList1;
