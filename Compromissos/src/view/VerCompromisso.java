@@ -63,6 +63,8 @@ public class VerCompromisso extends javax.swing.JFrame {
         
      
         carregaTexto(campos, edit);
+        carregaContatos(compromisso, usuario);
+        
         
         // Latter
         //carregaContatos(compromisso, usuario);
@@ -74,6 +76,36 @@ public class VerCompromisso extends javax.swing.JFrame {
             campos.get(i).setEnabled(e);                
     }
     
+    private void carregaContatos(Compromisso compromisso, Usuario usuario) {
+           
+        try {      
+            
+            ConnectionFactory cf = new ConnectionFactory();
+            conn = cf.getConnection();
+            conn.setAutoCommit(false);
+                     
+            String query = "SELECT * FROM pessoa p WHERE login is null AND p.id IN ( SELECT id_pessoa FROM pessoacompromisso pc WHERE pc.id_compromisso = ?);";
+                    
+            
+            PreparedStatement ps = conn.prepareStatement(query);  
+            ps.setInt(1, compromisso.getId());
+                     
+            ResultSet rs = ps.executeQuery();            
+                       
+            DefaultListModel demoList = new DefaultListModel();
+
+            while(rs.next()) {               
+                demoList.addElement(rs.getString("nome"));                               
+            }
+                       
+            listContatos.setModel(demoList);
+                     
+                                  
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Erro em carregaContatos: " + ex);
+        }    
+        
+    }
     
     /* LATTER LATTER LATTER LATTER LATTER LATTER 
     

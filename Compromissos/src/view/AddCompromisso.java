@@ -76,6 +76,7 @@ public class AddCompromisso extends javax.swing.JFrame {
                 textLocalCompromisso,
                 textDataFim
                 
+                
         ));
         
         listaContatosAdd.clear();
@@ -114,8 +115,7 @@ public class AddCompromisso extends javax.swing.JFrame {
     // MOSTRAR CONTATOS 
     private void exibeContatos() {
 
-            DefaultListModel model = new DefaultListModel();
-           
+            DefaultListModel model = new DefaultListModel();       
             ArrayList<Usuario> lista = carregaContatos(); 
 
             try {            
@@ -257,6 +257,15 @@ public class AddCompromisso extends javax.swing.JFrame {
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton3ActionPerformed(evt);
+            }
+        });
+
+        textLocalCompromisso.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                textLocalCompromissoFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                textLocalCompromissoFocusLost(evt);
             }
         });
 
@@ -566,6 +575,9 @@ public class AddCompromisso extends javax.swing.JFrame {
                     contatosids.add( (listaContatosAdd.get(i).getId()) );           
             }              
         }
+        
+        
+       
              
        InsereContatoBanco(compromisso, contatosids);
     
@@ -594,21 +606,11 @@ public class AddCompromisso extends javax.swing.JFrame {
                 ps.setInt(2, IDZAO );
                 
                 ps.execute();
-                
-               
-
-                
+  
             }
             
             conn.commit();
             ps.close();
-           
-            
-           
-           
-              
-
-            System.out.println("deve ter ido");
             
     }catch(SQLException ex) {
             System.out.println(ex);
@@ -696,6 +698,19 @@ public class AddCompromisso extends javax.swing.JFrame {
             singlePlaceHolder(textDataFim);
         }
     }//GEN-LAST:event_textDataFimFocusLost
+
+    private void textLocalCompromissoFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_textLocalCompromissoFocusGained
+         if(textLocalCompromisso.getText().equals("Local do compromisso"))
+            textLocalCompromisso.setText("");
+         removePlaceHolder(textLocalCompromisso);
+    }//GEN-LAST:event_textLocalCompromissoFocusGained
+
+    private void textLocalCompromissoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_textLocalCompromissoFocusLost
+         if(textLocalCompromisso.getText().equals("")) {
+            textLocalCompromisso.setText("Local do compromisso");
+            singlePlaceHolder(textLocalCompromisso);
+        }
+    }//GEN-LAST:event_textLocalCompromissoFocusLost
 
     
     public String SqlData(String data) {

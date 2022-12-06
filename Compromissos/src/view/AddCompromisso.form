@@ -205,6 +205,10 @@
       </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="textLocalCompromisso">
+      <Events>
+        <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="textLocalCompromissoFocusGained"/>
+        <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="textLocalCompromissoFocusLost"/>
+      </Events>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTextField(&quot;Local do compromisso&quot;)"/>
       </AuxValues>

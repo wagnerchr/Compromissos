@@ -9,15 +9,15 @@ import java.sql.PreparedStatement;
 import java.sql.Connection;
 import compromissos2.connections.UserConnection;
 import compromissos2.Usuario;
+import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.DefaultListModel;
-import static view.VerContato.contato;
 
 
 
@@ -25,51 +25,80 @@ public class Home extends javax.swing.JFrame {
 
     static Usuario usuario;
     
+    // Lista
     static ArrayList<Compromisso> listaCompromissos = new ArrayList<>();
     static ArrayList<Usuario> listaContatos = new ArrayList<>();
     static ArrayList<Grupo> listaGrupos = new ArrayList<>();
     
+   
+    // Conexão 
+    ConnectionFactory cf = new ConnectionFactory();
     Connection conn;
     
     public Home(Usuario usuario) {
         
         initComponents();
         
-        
-        // Window
-            this.setLocationRelativeTo(null);         
-            this.setResizable(false);
-            this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        this.usuario = usuario;
 
-            labelHello.setText("Hello, " + usuario.getNome());
+        /// dasnjdasb njdasnj 
+        
+        displayWindow();
+       
+        /*
+        URL iconURL = getClass().getResource("Compromissos\\images\\icon.png");
+        ImageIcon img = new ImageIcon(iconURL);
+        this.setIconImage(img.getImage());
+*/
+        // Window
+           
         //
          
         
-        this.usuario = usuario;
         
-        exibeCompromissos();
-        exibeContatos();
-        exibeGrupos();
-    
-        // Onclick Calendário
-        JDayChooser dayChooser = Calendario.getDayChooser();
-        dayChooser.setAlwaysFireDayProperty(true); // here is the key
- 
-        dayChooser.addPropertyChangeListener("day", (evt) -> {           
-                
-            Date date = new Date();
-           
-            if( Calendario.getDate().compareTo(date) < 0 && Calendario.getDate() != date ) {
-                System.out.println("é menor essa data ai");
-            } else {
-                System.out.println(" é maior ");
-                marcarCompromisso();   
-            }            
-        });
+        
+       
             
     }    
                      
-     
+    private void displayWindow() {
+    
+    
+        this.setLocationRelativeTo(null);         
+        this.setResizable(false);
+        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+        labelHello.setText("Hello, " + usuario.getNome());
+            
+        // Load JLists
+            exibeCompromissos();
+            exibeContatos();
+            exibeGrupos();
+            
+        // OnClicl Calendar 
+            Date date = new Date();
+            Calendar cal = Calendar.getInstance();
+            
+           
+        
+           
+
+            System.out.println(cal.get(Calendar.DAY_OF_MONTH));
+            
+            
+            JDayChooser dayChooser = Calendario.getDayChooser();            
+            dayChooser.setAlwaysFireDayProperty(true); // here is the key
+            
+            
+            dayChooser.addPropertyChangeListener("day", (evt) -> {           
+                  
+                if( Calendario.getDate().compareTo(date) >= 0) {         
+                    marcarCompromisso();   
+                }          
+            });       
+    } 
+    
+    
     public String getId(Usuario usuario) throws SQLException {
                
         // Pegar id 
@@ -91,8 +120,7 @@ public class Home extends javax.swing.JFrame {
     private ArrayList<Compromisso> carregaCompromissos() {
 
         try {
-            
-            ConnectionFactory cf = new ConnectionFactory();
+                      
             conn = cf.getConnection();
             conn.setAutoCommit(false);
                      
@@ -134,7 +162,7 @@ public class Home extends javax.swing.JFrame {
     public ArrayList<Usuario> carregaContatos() {
         
         try {           
-            ConnectionFactory cf = new ConnectionFactory();
+            
             conn = cf.getConnection();
             conn.setAutoCommit(false);
                      
@@ -182,7 +210,7 @@ public class Home extends javax.swing.JFrame {
         
         try {
             
-            ConnectionFactory cf = new ConnectionFactory();
+            
             conn = cf.getConnection();
             conn.setAutoCommit(false);
                      
@@ -539,10 +567,13 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void compromissosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_compromissosMouseClicked
+        if( compromissos.getSelectedIndex() >= 0) {
+        
         this.setVisible(false);    
         
         VerCompromisso vercompromisso = new VerCompromisso(listaCompromissos.get(compromissos.getAnchorSelectionIndex()), usuario);
         vercompromisso.setVisible(true);
+        }
     }//GEN-LAST:event_compromissosMouseClicked
 
     private void gruposMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_gruposMouseClicked
@@ -561,6 +592,18 @@ public class Home extends javax.swing.JFrame {
     public void selecionaData() {
         System.out.println(Calendario.getDate());
     }
+    
+    
+    public void windowClosing(WindowEvent e) {
+    
+        int dialogResult = JOptionPane.showConfirmDialog(this, "Quer mesmo excluir este compromisso?", "Excluir compromisso", JOptionPane.YES_NO_OPTION);
+       
+        if(dialogResult == 0) 
+            System.out.println("TÁ");
+        else 
+             System.exit(0);
+    }
+
     
     
     /**

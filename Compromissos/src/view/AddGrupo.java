@@ -9,10 +9,19 @@ import compromissos2.Usuario;
 import compromissos2.connections.GrupoConnection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import static view.AddCompromisso.IDZAO;
+import static view.AddCompromisso.cf;
+import static view.AddCompromisso.lista;
+import static view.AddCompromisso.listaContatosAdd;
+import static view.AddCompromisso.usuario;
 
 
 /**
@@ -23,6 +32,10 @@ public class AddGrupo extends javax.swing.JFrame {
 
     static Usuario usuario;
     Connection conn;
+     static DefaultListModel demoList = new DefaultListModel();
+     
+     static ArrayList<Usuario> listaContatosAdd = new ArrayList<>();
+     static int IDZAO;
     
     public AddGrupo(Usuario usuario) {
         
@@ -41,6 +54,8 @@ public class AddGrupo extends javax.swing.JFrame {
         
         ));
         
+       listaContatosAdd.clear();
+        exibeContatos();
         /*
         
        
@@ -64,6 +79,11 @@ public class AddGrupo extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         textDescricao = new javax.swing.JTextArea();
+        jLabel1 = new javax.swing.JLabel();
+        comboboxContatos = new javax.swing.JComboBox<>();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        listContatos = new javax.swing.JList<>();
+        jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -82,6 +102,29 @@ public class AddGrupo extends javax.swing.JFrame {
         textDescricao.setRows(5);
         jScrollPane1.setViewportView(textDescricao);
 
+        jLabel1.setText("Adicionar Participantes");
+
+        comboboxContatos.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {}));
+        comboboxContatos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboboxContatosActionPerformed(evt);
+            }
+        });
+
+        listContatos.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = {};
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane2.setViewportView(listContatos);
+
+        jButton3.setText("Add");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -89,37 +132,130 @@ public class AddGrupo extends javax.swing.JFrame {
             .addComponent(fotoGrupo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addGap(28, 28, 28)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(textNome, javax.swing.GroupLayout.DEFAULT_SIZE, 230, Short.MAX_VALUE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 109, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(textNome, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 172, Short.MAX_VALUE)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(50, 50, 50))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(comboboxContatos, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton3))
+                        .addGap(35, 35, 35))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(fotoGrupo, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(25, 25, 25)
-                .addComponent(textNome, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(79, 79, 79)
-                        .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
+                        .addComponent(textNome, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 57, Short.MAX_VALUE)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 84, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(comboboxContatos, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton3)
+                        .addGap(54, 54, 54)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 58, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void exibeContatos() {
+    
+         DefaultListModel model = new DefaultListModel();       
+            ArrayList<Usuario> lista = carregaContatos(); 
+
+            try {            
+                int count = 0;
+                while(lista.size() > count) {       
+                    
+                    listaContatosAdd.add(lista.get(count));
+                    comboboxContatos.addItem(lista.get(count).getNome());               
+                    count++;
+                }                         
+            } catch (Exception ex) {
+                 JOptionPane.showMessageDialog(null, "Erro em exibeContatos: " + ex);
+            }
+    }
+    
+    private ArrayList<Usuario> carregaContatos() {
+    
+        try {
+            //ConnectionFactory cf = new ConnectionFactory();
+            conn = cf.getConnection();
+            conn.setAutoCommit(false);
+
+            String query = "SELECT * FROM pessoa p WHERE p.id IN ( SELECT id_contato FROM pessoacontato pc WHERE pc.id_pessoa = ?)";
+
+            int userId = Integer.valueOf(getId(usuario));
+            PreparedStatement ps = conn.prepareStatement(query);  
+            ps.setInt(1, userId);
+
+            ResultSet rs = ps.executeQuery();            
+            // SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+
+            while(rs.next()) {
+
+                SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd"); 
+                Date date = formato.parse(rs.getString("data_nasc")); 
+
+                Usuario contato = new Usuario(
+                        rs.getString("nome"),
+                        rs.getInt("id"),                 
+                        date,
+                        rs.getString("endereco"),
+                        rs.getString("telefone"),
+                        rs.getString("email")                      
+                );
+  
+                lista.add(contato);      
+            }
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Erro em carregaContatos: " + ex);
+        } catch (ParseException ex) {
+            JOptionPane.showMessageDialog(null, "Erro em carregaContatos: " + ex);
+        }
+
+        return lista;
+    
+    }
+    
+    public String getId(Usuario usuario) throws SQLException {
+
+        UserConnection connection_usuario = new UserConnection(); 
+
+        ResultSet rsUsuario = connection_usuario.autenticacao(usuario);           
+        String idUsuario = "";
+
+        if(rsUsuario.next()) 
+            idUsuario = rsUsuario.getString("id");
+        else 
+            JOptionPane.showMessageDialog(null, "Problema ao estabelecer conexão com o usuário");
+
+        return idUsuario;
+    } 
+    
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         
         try {
@@ -136,6 +272,7 @@ public class AddGrupo extends javax.swing.JFrame {
             );
             
             InsereGrupoBanco(grupo);
+            InsereContatosGrupo(grupo);
             
             this.dispose();
             new Home(usuario).setVisible(true);
@@ -144,6 +281,77 @@ public class AddGrupo extends javax.swing.JFrame {
             System.out.println(e);
         }
     }//GEN-LAST:event_jButton2ActionPerformed
+
+   private void InsereContatosGrupo(Grupo grupo) {
+   
+        ArrayList<Integer> contatosIds = new ArrayList<Integer>();
+                    
+        for(int i = 0; i < listaContatosAdd.size(); i++) {   
+            
+            for(int j = 0; j < listContatos.getModel().getSize(); j++) {
+                
+                if( ( listaContatosAdd.get(i).getNome() ).equals( listContatos.getModel().getElementAt(j)) )         
+                    contatosIds.add( (listaContatosAdd.get(i).getId()) );           
+            }              
+        }
+        
+        System.out.println("Lista dos IDS : " + listaContatosAdd); 
+        InsereGruposBanco(grupo, contatosIds);
+
+   }
+    
+   private void InsereGruposBanco(Grupo grupo,  ArrayList<Integer> contatosIds) {
+       
+            
+        try {    
+            
+            String query = "INSERT INTO pessoagrupo() VALUES(?, ?)";
+            
+            ConnectionFactory cf = new ConnectionFactory();
+            conn = cf.getConnection();
+            conn.setAutoCommit(false);
+            
+            PreparedStatement ps;
+
+            ps = conn.prepareStatement(query);
+            
+            for(int i = 0; i < contatosIds.size(); i++) {
+                
+                
+                ps.setInt(1, contatosIds.get(i));
+                ps.setInt(2, IDZAO );
+                
+                System.out.println("ID: " + contatosIds.get(i));
+
+                ps.execute();
+                
+  
+            }
+            
+            conn.commit();
+            ps.close();
+            
+    }catch(SQLException ex) {
+            System.out.println(ex);
+    }
+       
+       
+       
+   
+   
+   }
+    
+    private void comboboxContatosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboboxContatosActionPerformed
+
+    }//GEN-LAST:event_comboboxContatosActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+
+        demoList.addElement(comboboxContatos.getSelectedItem());
+        comboboxContatos.removeItem(comboboxContatos.getSelectedItem());
+        listContatos.setModel(demoList);
+
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     private void InsereGrupoBanco(Grupo grupo) {
         
@@ -196,9 +404,10 @@ public class AddGrupo extends javax.swing.JFrame {
             else 
                 JOptionPane.showMessageDialog(null, "Problema ao estabelecer conexão com o usuário");
             
-            if(rsGrupo.next())
+            if(rsGrupo.next()) {
                 idGrupo = rsGrupo.getString("id");
-            else 
+                IDZAO = Integer.parseInt(idGrupo); 
+            } else 
                  JOptionPane.showMessageDialog(null, "Problema ao estabelecer conexão com o grupo");
             
              
@@ -266,10 +475,15 @@ public class AddGrupo extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> comboboxContatos;
     private java.awt.Label fotoGrupo;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JList<String> listContatos;
     private javax.swing.JTextArea textDescricao;
     private javax.swing.JTextField textNome;
     // End of variables declaration//GEN-END:variables
