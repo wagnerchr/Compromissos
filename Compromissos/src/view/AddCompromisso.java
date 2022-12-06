@@ -35,6 +35,7 @@ public class AddCompromisso extends javax.swing.JFrame {
     static DefaultListModel demoList = new DefaultListModel();
     static ArrayList<Usuario> lista = new ArrayList<>();
     static ConnectionFactory cf = new ConnectionFactory();
+    static int IDZAO;
     
     // Contatos
     static ArrayList<Usuario> listaContatosAdd = new ArrayList<>();
@@ -418,7 +419,7 @@ public class AddCompromisso extends javax.swing.JFrame {
             );        
                 
             InsereCompromissoBanco(compromisso);          
-            // InsereContatosCompromisso(compromisso);
+            InsereContatosCompromisso(compromisso);
            
         } catch(Exception e) {
             System.out.println(e);
@@ -435,14 +436,15 @@ public class AddCompromisso extends javax.swing.JFrame {
             
         
 
-        try {                 
+        try {              
+            
             ConnectionFactory cf = new ConnectionFactory();
             conn = cf.getConnection();
             conn.setAutoCommit(false);
      
             ps = conn.prepareStatement(query);
             
-            ps.setString(1, null);
+            ps.setString(1, null);          
             ps.setString(2, compromisso.getNome());
             ps.setString(3, compromisso.getDescricao());
             ps.setString(4, compromisso.getLocalc());
@@ -481,9 +483,10 @@ public class AddCompromisso extends javax.swing.JFrame {
             else 
                 JOptionPane.showMessageDialog(null, "Problema ao estabelecer conexão com o usuário");
                         
-            if(rsCompromisso.next()) 
+            if(rsCompromisso.next())  {
                 idCompromisso = rsCompromisso.getString("id");
-            else 
+                IDZAO = Integer.parseInt(idCompromisso);           
+            } else 
                 JOptionPane.showMessageDialog(null, "Problema ao estabelecer conexão com o contato adicionado");
 
             // ID USUÁRIO E ID CONTATO
@@ -548,36 +551,33 @@ public class AddCompromisso extends javax.swing.JFrame {
         } 
     }//GEN-LAST:event_setHourActionPerformed
 
-/*
+
     private void InsereContatosCompromisso(Compromisso compromisso) {
     
-        ArrayList<Integer> contatosIds = new ArrayList<>();
-        ArrayList<String> nomes = new ArrayList<>();
+        ArrayList<Integer> contatosids = new ArrayList<Integer>();
         
-        System.out.println(listContatos.getModel().getElementAt(0));
-        System.out.println( listaContatosAdd.get(0).getId() );
         
-        for(int i = 0; i < listaContatosAdd.size(); i++) 
-            nomes.add(listaContatosAdd.get(i).getNome());
                 
-        for (int i = 0; i < listContatos.getModel().getSize(); i++) {
-
-            if( nomes.contains( listContatos.getModel().getElementAt(i) ) ) {
-
-                contatosIds.add( listaContatosAdd.get(i).getId() );
-            }
-        }
+        for(int i = 0; i < listaContatosAdd.size(); i++) {   
             
-        InsereContatoBanco(compromisso, contatosIds);
+            for(int j = 0; j < listContatos.getModel().getSize(); j++) {
+                
+                if( ( listaContatosAdd.get(i).getNome() ).equals( listContatos.getModel().getElementAt(j)) )         
+                    contatosids.add( (listaContatosAdd.get(i).getId()) );           
+            }              
+        }
+             
+       InsereContatoBanco(compromisso, contatosids);
     
     }
  
     private void InsereContatoBanco(Compromisso compromisso, ArrayList<Integer> contatosIds) {
     
-           
-       
+        int[] arrayContatosIds = contatosIds.stream().mapToInt(i -> i).toArray();
         
         try {    
+            
+            String query = "INSERT INTO pessoacompromisso() VALUES(?, ?)";
             
             ConnectionFactory cf = new ConnectionFactory();
             conn = cf.getConnection();
@@ -585,31 +585,37 @@ public class AddCompromisso extends javax.swing.JFrame {
             
             PreparedStatement ps;
 
-            String query = "INSERT INTO pessoacompromisso() VALUES(?, ?)";
-            
-            java.sql.Array array = conn.createArrayOf("VARCHAR", new Object[]{38, 39, 40});
-            
-            
-
-            
-            
             ps = conn.prepareStatement(query);
             
-            ps.setArray(1, array);
-            ps.setInt(2, compromisso.getId() );
-             
-            ps.execute();
-            conn.commit();
-            //ps.close();    
-            ps.close();
+            for(int i = 0; i < contatosIds.size(); i++) {
+                
+                
+                ps.setInt(1, contatosIds.get(i));
+                ps.setInt(2, IDZAO );
+                
+                ps.execute();
+                
+               
 
-        
+                
+            }
+            
+            conn.commit();
+            ps.close();
+           
+            
+           
+           
+              
+
+            System.out.println("deve ter ido");
+            
     }catch(SQLException ex) {
             System.out.println(ex);
     }
     
     }
- */
+ 
     
     private void labelStartMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_labelStartMouseClicked
         firstClick = true;
