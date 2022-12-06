@@ -27,18 +27,20 @@ CREATE TABLE pessoacontato (
     FOREIGN KEY (id_pessoa) REFERENCES pessoa(id)
 );
 
+
+ 
+CREATE TABLE grupo (
+	id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(255),
+    descricao VARCHAR(255)
+);
+
 CREATE TABLE pessoagrupo (
 	id_pessoa int NOT NULL,
     id_grupo int NOT NULL,
     
     FOREIGN KEY (id_pessoa) REFERENCES pessoa(id),
     FOREIGN KEY (id_grupo) REFERENCES grupo(id)
-);
- 
-CREATE TABLE grupo (
-	id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    nome VARCHAR(255),
-    descricao VARCHAR(255)
 );
 
 CREATE TABLE compromisso (
@@ -59,7 +61,19 @@ CREATE TABLE pessoacompromisso (
 );
 
 
+Select * from pessoagrupo;
+SELECT * FROM pessoa p WHERE login is null AND p.id IN ( SELECT id_pessoa FROM pessoagrupo pg WHERE pg.id_grupo = 10);
 
+
+
+/*
+Select * from pessoa;
+SELECT * FROM pessoacompromisso;
+
+SELECT * FROM compromisso;
+SELECT * FROM pessoagrupo;
+SELECT * FROM pessoa p WHERE login is null AND p.id IN ( SELECT id_pessoa FROM pessoacompromisso pc WHERE pc.id_compromisso = 63);
+*/
 /*
 SELECT * from compromisso;
 Describe grupo;
@@ -68,7 +82,7 @@ SELECT * FROM pessoagrupo WHERE pessoagrupo.id_pessoa = 1;
 
 SELECT * FROM pessoa p WHERE p.id IN (SELECT id_contato FROM pessoacontato pc WHERE pc.id_pessoa = 1);
 
-SELECT * FROM pessoagrupo;
+SELECT * FROM pessoacompromisso;
 SELECT * FROM grupo g WHERE g.id IN ( SELECT id_grupo FROM pessoagrupo pc WHERE pc.id_pessoa = 1);
 
 DESCRIBE pessoa;
