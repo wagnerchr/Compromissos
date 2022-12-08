@@ -17,22 +17,16 @@ import java.util.Date;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import static view.AddCompromisso.IDZAO;
-import static view.AddCompromisso.cf;
-import static view.AddCompromisso.lista;
-import static view.AddCompromisso.listaContatosAdd;
-import static view.AddCompromisso.usuario;
 
 
-/**
- *
- * @author Pichau
- */
 public class AddGrupo extends javax.swing.JFrame {
 
     static Usuario usuario;
     Connection conn;
+    ConnectionFactory cf = new ConnectionFactory();
      static DefaultListModel demoList = new DefaultListModel();
+    ArrayList<Usuario> lista = new ArrayList<>();
+
      
      static ArrayList<Usuario> listaContatosAdd = new ArrayList<>();
      static int IDZAO;
@@ -201,18 +195,17 @@ public class AddGrupo extends javax.swing.JFrame {
     private ArrayList<Usuario> carregaContatos() {
     
         try {
-            //ConnectionFactory cf = new ConnectionFactory();
+            
             conn = cf.getConnection();
             conn.setAutoCommit(false);
-
+            
             String query = "SELECT * FROM pessoa p WHERE p.id IN ( SELECT id_contato FROM pessoacontato pc WHERE pc.id_pessoa = ?)";
 
             int userId = Integer.valueOf(getId(usuario));
             PreparedStatement ps = conn.prepareStatement(query);  
             ps.setInt(1, userId);
 
-            ResultSet rs = ps.executeQuery();            
-            // SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+            ResultSet rs = ps.executeQuery();                      
 
             while(rs.next()) {
 

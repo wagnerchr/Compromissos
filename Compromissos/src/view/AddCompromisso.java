@@ -1,6 +1,7 @@
 package view;
 
 import compromissos2.Compromisso;
+import compromissos2.PlaceHolders;
 import compromissos2.Usuario;
 import compromissos2.connections.CompromissoConnection;
 import compromissos2.connections.ConnectionFactory;
@@ -29,31 +30,29 @@ import javax.swing.JTextField;
 public class AddCompromisso extends javax.swing.JFrame {
 
     static Date date;
-    static boolean firstClick = true;
+    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+    DefaultListModel demoList = new DefaultListModel();
+    
+    PlaceHolders placeHolders = new PlaceHolders();
+    ConnectionFactory cf = new ConnectionFactory();
+    
+    ArrayList<Usuario> lista = new ArrayList<>();
     static Usuario usuario;
-    static SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-    static DefaultListModel demoList = new DefaultListModel();
-    static ArrayList<Usuario> lista = new ArrayList<>();
-    static ConnectionFactory cf = new ConnectionFactory();
-    static int IDZAO;
-    
-    // Contatos
-    static ArrayList<Usuario> listaContatosAdd = new ArrayList<>();
-    
-    
+  
+    ArrayList<Usuario> listaContatosAdd = new ArrayList<>();
+    boolean firstClick = true;
+    int IDZAO;
+
     public AddCompromisso(Usuario usuario, Date data) {
         
         initComponents();
-      
-        this.setBackground(Color.white);
-        this.setResizable(false);
-        this.setLocationRelativeTo(null);    
-        this.setDefaultCloseOperation(0);  
-        
+             
         this.usuario = usuario;
         this.date = data;
-  
-        // Título da janela: 
+        
+                 
+    // Título da janela: 
+        displayWindow();
         
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("Brazil/West"));           
         cal.setTime(date);
@@ -75,49 +74,35 @@ public class AddCompromisso extends javax.swing.JFrame {
                 textNomeCompromisso,               
                 textLocalCompromisso,
                 textDataFim
-                
-                
+          
         ));
         
         listaContatosAdd.clear();
         exibeContatos();
-        timePicker.getSelectedTime();     
-        startPlaceHolders(campos);
+        timePicker.getSelectedTime();   
+        
+        placeHolders.startPlaceHolders(campos);
+    }
+    
+    //  
+    private void displayWindow() {
+        
+        this.setBackground(Color.white);
+        this.setResizable(false);
+        this.setLocationRelativeTo(null);    
+        this.setDefaultCloseOperation(0);  
+    
     
     }
- 
-    // PLACE HOLDERS    
-        public void startPlaceHolders(ArrayList<JTextField> campos) {
-
-            for (int i = 0; i < campos.size(); i++) {
-                Font font = campos.get(i).getFont();
-                font = font.deriveFont(Font.ITALIC);
-                campos.get(i).setFont(font);
-                campos.get(i).setForeground(Color.gray);
-            }
-        }
-
-        public void singlePlaceHolder(JTextField texto) {
-            Font font = texto.getFont();
-            font = font.deriveFont(Font.ITALIC);       
-            texto.setFont(font);
-            texto.setForeground(Color.gray);
-        }
-
-        public void removePlaceHolder(JTextField texto) {
-            Font font = texto.getFont();
-            font = font.deriveFont(Font.PLAIN | Font.BOLD);
-            texto.setFont(font);
-            texto.setForeground(Color.black);
-        }
-    // FIM PLACEHOLDERS
     
     // MOSTRAR CONTATOS 
     private void exibeContatos() {
 
-            DefaultListModel model = new DefaultListModel();       
+            DefaultListModel model = new DefaultListModel();  
+            lista.clear();
+            listaContatosAdd.clear();
             ArrayList<Usuario> lista = carregaContatos(); 
-
+          
             try {            
                 int count = 0;
                 while(lista.size() > count) {       
@@ -163,13 +148,16 @@ public class AddCompromisso extends javax.swing.JFrame {
   
                 lista.add(contato);      
             }
+            
+            conn.close();
 
-        } catch (SQLException ex) {
+            
+        } catch (SQLException ex) {           
             JOptionPane.showMessageDialog(null, "Erro em carregaContatos: " + ex);
-        } catch (ParseException ex) {
+        } catch (ParseException ex) {        
             JOptionPane.showMessageDialog(null, "Erro em carregaContatos: " + ex);
-        }
-
+        }   
+        
         return lista;
     };
     // FIM MOSTRA CONTATOS
@@ -674,13 +662,14 @@ public class AddCompromisso extends javax.swing.JFrame {
     private void textNomeCompromissoFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_textNomeCompromissoFocusGained
         if(textNomeCompromisso.getText().equals("Nome do Compromisso"))
             textNomeCompromisso.setText("");
-         removePlaceHolder(textNomeCompromisso);
+         placeHolders.removePlaceHolder(textNomeCompromisso);
     }//GEN-LAST:event_textNomeCompromissoFocusGained
 
     private void textNomeCompromissoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_textNomeCompromissoFocusLost
         if(textNomeCompromisso.getText().equals("")) {
             textNomeCompromisso.setText("Nome do Compromisso");
-            singlePlaceHolder(textNomeCompromisso);
+            
+        placeHolders.singlePlaceHolder(textNomeCompromisso);          
         }
     }//GEN-LAST:event_textNomeCompromissoFocusLost
 
@@ -688,27 +677,27 @@ public class AddCompromisso extends javax.swing.JFrame {
     private void textDataFimFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_textDataFimFocusGained
        if(textDataFim.getText().equals("Data do encerramento do compromisso"))
             textDataFim.setText("");
-         removePlaceHolder(textDataFim);
-      
+       
+        placeHolders.removePlaceHolder(textDataFim);     
     }//GEN-LAST:event_textDataFimFocusGained
 
     private void textDataFimFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_textDataFimFocusLost
          if(textDataFim.getText().equals("")) {
-            textDataFim.setText("Data do encerramento do compromisso");
-            singlePlaceHolder(textDataFim);
+            textDataFim.setText("Data do encerramento do compromisso");               
+            placeHolders.singlePlaceHolder(textDataFim);
         }
     }//GEN-LAST:event_textDataFimFocusLost
 
     private void textLocalCompromissoFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_textLocalCompromissoFocusGained
          if(textLocalCompromisso.getText().equals("Local do compromisso"))
             textLocalCompromisso.setText("");
-         removePlaceHolder(textLocalCompromisso);
+        placeHolders.removePlaceHolder(textDataFim);
     }//GEN-LAST:event_textLocalCompromissoFocusGained
 
     private void textLocalCompromissoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_textLocalCompromissoFocusLost
          if(textLocalCompromisso.getText().equals("")) {
             textLocalCompromisso.setText("Local do compromisso");
-            singlePlaceHolder(textLocalCompromisso);
+            placeHolders.singlePlaceHolder(textLocalCompromisso);
         }
     }//GEN-LAST:event_textLocalCompromissoFocusLost
 
@@ -777,12 +766,8 @@ public class AddCompromisso extends javax.swing.JFrame {
        
        return dataSQL;
     }
+
     
-    
-    
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">

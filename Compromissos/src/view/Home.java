@@ -9,6 +9,9 @@ import java.sql.PreparedStatement;
 import java.sql.Connection;
 import compromissos2.connections.UserConnection;
 import compromissos2.Usuario;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,6 +24,7 @@ import javax.swing.DefaultListModel;
 
 
 
+
 public class Home extends javax.swing.JFrame {
 
     static Usuario usuario;
@@ -30,6 +34,8 @@ public class Home extends javax.swing.JFrame {
     static ArrayList<Usuario> listaContatos = new ArrayList<>();
     static ArrayList<Grupo> listaGrupos = new ArrayList<>();
     
+    boolean Choosed = false;
+    int dateChoosed;
    
     // Conexão 
     ConnectionFactory cf = new ConnectionFactory();
@@ -45,20 +51,18 @@ public class Home extends javax.swing.JFrame {
         
         displayWindow();
        
-        /*
-        URL iconURL = getClass().getResource("Compromissos\\images\\icon.png");
-        ImageIcon img = new ImageIcon(iconURL);
-        this.setIconImage(img.getImage());
-*/
-        // Window
-           
-        //
-         
-        
-        
-        
-       
-            
+  
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                try {
+                    super.windowClosing(e);
+                    conn.close();
+                } catch(SQLException ex) {
+                    System.out.println("rolou algo");
+                }         
+            }
+        });         
     }    
                      
     private void displayWindow() {
@@ -68,34 +72,38 @@ public class Home extends javax.swing.JFrame {
         this.setResizable(false);
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        labelHello.setText("Hello, " + usuario.getNome());
+        labelHello.setText("Bem-vindo, " + usuario.getNome());
+        labelHello.setFont(new Font("Roboto", Font.PLAIN, 32));
+        
+        iconPhoto.setBackground(Color.red);
+        
             
         // Load JLists
             exibeCompromissos();
             exibeContatos();
             exibeGrupos();
             
-        // OnClicl Calendar 
+        // OnClick Calendar 
             Date date = new Date();
             Calendar cal = Calendar.getInstance();
-            
-           
-        
-           
+                     
+            // Select Date
+                JDayChooser dayChooser = Calendario.getDayChooser();            
+                dayChooser.setAlwaysFireDayProperty(true); // here is the key
 
-            System.out.println(cal.get(Calendar.DAY_OF_MONTH));
-            
-            
-            JDayChooser dayChooser = Calendario.getDayChooser();            
-            dayChooser.setAlwaysFireDayProperty(true); // here is the key
-            
-            
-            dayChooser.addPropertyChangeListener("day", (evt) -> {           
-                  
-                if( Calendario.getDate().compareTo(date) >= 0) {         
-                    marcarCompromisso();   
-                }          
-            });       
+
+                dayChooser.addPropertyChangeListener("day", (evt) -> {    
+
+
+
+                    if( dateChoosed == dayChooser.getDay() ) {                                     
+                        if( Calendario.getDate().compareTo(date) >= 0) {         
+                            marcarCompromisso();   
+                        }   
+                    }        
+                    dateChoosed = dayChooser.getDay();                  
+                });       
+        //
     } 
     
     
@@ -357,6 +365,7 @@ public class Home extends javax.swing.JFrame {
         grupos = new javax.swing.JList<>();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
+        iconPhoto = new javax.swing.JLabel();
 
         jList1.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = {""};
@@ -367,7 +376,7 @@ public class Home extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        labelHello.setText("Hello");
+        labelHello.setText(" ");
 
         compromissos.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = {""};
@@ -489,6 +498,9 @@ public class Home extends javax.swing.JFrame {
             }
         });
 
+        iconPhoto.setForeground(new java.awt.Color(204, 0, 0));
+        iconPhoto.setText(" ");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -497,33 +509,34 @@ public class Home extends javax.swing.JFrame {
                 .addGap(30, 30, 30)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(labelHello)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(Calendario, javax.swing.GroupLayout.PREFERRED_SIZE, 750, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
+                        .addComponent(Lista, javax.swing.GroupLayout.PREFERRED_SIZE, 407, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(30, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(jButton4))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(Calendario, javax.swing.GroupLayout.PREFERRED_SIZE, 750, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
-                                .addComponent(Lista, javax.swing.GroupLayout.PREFERRED_SIZE, 407, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap(30, Short.MAX_VALUE))))
+                        .addComponent(labelHello, javax.swing.GroupLayout.PREFERRED_SIZE, 535, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton4)
+                        .addGap(18, 18, 18)
+                        .addComponent(iconPhoto, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(44, 44, 44))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(14, 14, 14)
-                .addComponent(jButton4)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(labelHello)
-                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(iconPhoto, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(labelHello, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton4)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(Calendario, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(51, 51, 51))
                     .addComponent(Lista, javax.swing.GroupLayout.PREFERRED_SIZE, 567, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(27, Short.MAX_VALUE))
+                .addGap(37, 37, 37))
         );
 
         pack();
@@ -594,15 +607,7 @@ public class Home extends javax.swing.JFrame {
     }
     
     
-    public void windowClosing(WindowEvent e) {
-    
-        int dialogResult = JOptionPane.showConfirmDialog(this, "Quer mesmo excluir este compromisso?", "Excluir compromisso", JOptionPane.YES_NO_OPTION);
-       
-        if(dialogResult == 0) 
-            System.out.println("TÁ");
-        else 
-             System.exit(0);
-    }
+
 
     
     
@@ -648,6 +653,7 @@ public class Home extends javax.swing.JFrame {
     private javax.swing.JList<String> compromissos;
     private javax.swing.JList<String> contatos;
     private javax.swing.JList<String> grupos;
+    private javax.swing.JLabel iconPhoto;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
