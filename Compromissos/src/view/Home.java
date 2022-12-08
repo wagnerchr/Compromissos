@@ -15,6 +15,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -89,21 +90,24 @@ public class Home extends javax.swing.JFrame {
                      
             // Select Date
                 JDayChooser dayChooser = Calendario.getDayChooser();            
-                dayChooser.setAlwaysFireDayProperty(true); // here is the key
-
+                dayChooser.setAlwaysFireDayProperty(true); // here is the key     
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
                 dayChooser.addPropertyChangeListener("day", (evt) -> {    
-
-
-
-                    if( dateChoosed == dayChooser.getDay() ) {                                     
-                        if( Calendario.getDate().compareTo(date) >= 0) {         
-                            marcarCompromisso();   
-                        }   
-                    }        
-                    dateChoosed = dayChooser.getDay();                  
-                });       
-        //
+                    
+                    try {                    
+                        Date todaysDate = sdf.parse(sdf.format(date));
+                        Date CalendarDate = sdf.parse(sdf.format(Calendario.getDate()));
+                
+                        if( dateChoosed == dayChooser.getDay() )                         
+                            if( Calendario.getDate().compareTo(date) >= 0 || CalendarDate.equals(todaysDate) )         
+                                marcarCompromisso();                                         
+                        dateChoosed = dayChooser.getDay();
+                        
+                    } catch(ParseException pe) {
+                        System.out.println("Erro ao converter data em HOME: " + pe);
+                    }
+                });    
     } 
     
     
