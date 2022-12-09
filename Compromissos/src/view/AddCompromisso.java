@@ -7,8 +7,6 @@ import compromissos2.connections.CompromissoConnection;
 import compromissos2.connections.ConnectionFactory;
 import compromissos2.connections.UserConnection;
 import java.awt.Color;
-import java.awt.Font;
-import java.lang.reflect.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,7 +14,9 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,6 +42,7 @@ public class AddCompromisso extends javax.swing.JFrame {
     ArrayList<Usuario> listaContatosAdd = new ArrayList<>();
     boolean firstClick = true;
     int IDZAO;
+    int IDUSUARIO;
 
     public AddCompromisso(Usuario usuario, Date data) {
         
@@ -125,7 +126,7 @@ public class AddCompromisso extends javax.swing.JFrame {
 
             String query = "SELECT * FROM pessoa p WHERE p.id IN ( SELECT id_contato FROM pessoacontato pc WHERE pc.id_pessoa = ?)";
 
-            int userId = Integer.valueOf(getId(usuario));
+            int userId = Integer.valueOf(getIdUsuario(usuario));
             PreparedStatement ps = conn.prepareStatement(query);  
             ps.setInt(1, userId);
 
@@ -160,10 +161,10 @@ public class AddCompromisso extends javax.swing.JFrame {
         
         return lista;
     };
-    // FIM MOSTRA CONTATOS
+    // FIM MOSTRA CONTATOS// FIM MOSTRA CONTATOS
 
     // VER ID
-    public String getId(Usuario usuario) throws SQLException {
+    public String getIdUsuario(Usuario usuario) throws SQLException {
 
         UserConnection connection_usuario = new UserConnection(); 
 
@@ -177,7 +178,8 @@ public class AddCompromisso extends javax.swing.JFrame {
 
         return idUsuario;
     } 
-    //    
+    //  
+    
     
 
     @SuppressWarnings("unchecked")
@@ -405,18 +407,17 @@ public class AddCompromisso extends javax.swing.JFrame {
             dataInicio = LocalDateTime.parse( labelStart.getText(), formatterD);
             dataFim = LocalDateTime.parse(labelFinish.getText(), formatterD);
             
-           
-                 
+      
             Compromisso compromisso = new Compromisso(
                     nome,
                     descricao,
                     localc,
                     dataInicio,
                     dataFim                  
-            );        
-                
-            InsereCompromissoBanco(compromisso);          
-            InsereContatosCompromisso(compromisso);
+            );   
+            
+            checkCompromisso(compromisso);      
+            
            
         } catch(Exception e) {
             System.out.println(e);
@@ -424,6 +425,57 @@ public class AddCompromisso extends javax.swing.JFrame {
                   
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    
+    private void checkCompromisso(Compromisso compromisso) {
+    
+        String query =
+            "SELECT * FROM compromisso c WHERE c.id IN ( SELECT id_compromisso FROM pessoacompromisso pc  WHERE pc.id_pessoa = ?)";
+ 
+        try {
+
+            conn = cf.getConnection();
+            conn.setAutoCommit(false);
+        
+            PreparedStatement ps = conn.prepareStatement(query);        
+            ps.setInt(1, Integer.parseInt(getIdUsuario(usuario)) );
+            
+            
+            
+            ResultSet rs = ps.executeQuery();      
+            
+            System.out.println("ENTROUUU");
+            
+            while(rs.next()) {
+                
+                LocalDateTime dateInsert = rs.getTimestamp("data_inicio").toLocalDateTime();             
+                Instant instant = dateInsert.toInstant(ZoneOffset.UTC);
+                Instant instant2 = (compromisso.getInicio()).toInstant(ZoneOffset.UTC);
+                Instant instant3 = (compromisso.getFim()).toInstant(ZoneOffset.UTC);
+                  
+                Date dateInsertt = Date.from(instant);
+                Date inicio = Date.from( instant2 );
+                Date fim = Date.from( instant3 );
+                
+                if( !(dateInsertt.before(inicio)) || (dateInsertt.after(fim)) )  {                  
+                    JOptionPane.showMessageDialog(null, "Já existe um compromisso nesta data!");
+                    return;                   
+                }            
+            }
+            
+            rs.close();
+           
+        // Agora pode 
+            InsereCompromissoBanco(compromisso);          
+            InsereContatosCompromisso(compromisso);
+           
+        } catch (SQLException ex) {
+        
+            System.out.println("ero rekadkas kmdkasd kaskd amsk " + ex);
+        }
+    }
+    
+    
+    
     private void InsereCompromissoBanco(Compromisso compromisso) {
                
         String query = "insert into compromisso() values(?, ?, ?, ?, ?, ?)";
@@ -475,9 +527,10 @@ public class AddCompromisso extends javax.swing.JFrame {
              String idUsuario = "", idCompromisso = "";
             
              // Get Id's
-            if(rsUsuario.next()) 
+            if(rsUsuario.next()) {
                 idUsuario = rsUsuario.getString("id");
-            else 
+                IDUSUARIO = Integer.parseInt(idUsuario);
+            } else 
                 JOptionPane.showMessageDialog(null, "Problema ao estabelecer conexão com o usuário");
                         
             if(rsCompromisso.next())  {
@@ -713,8 +766,8 @@ public class AddCompromisso extends javax.swing.JFrame {
         if(data.substring(data.length() - 2).equals("PM")) {
             
             hora = 12 + Integer.valueOf(data.substring(0, 2));
-            hora = (hora == 24) ? 0 : hora;
-            horaS = String.valueOf(hora);
+            horaS = (hora == 24) ? "00" : String.valueOf(hora);
+            //horaS = String.valueOf(hora);
             
             horario = horaS + ":" + data.substring(3, 5);          
                   

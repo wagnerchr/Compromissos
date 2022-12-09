@@ -111,8 +111,7 @@ public class Login extends javax.swing.JFrame {
                     pref.put("User", "");
                     pref.put("Password", "");
                     pref.putBoolean("rememberMe", false);
-                
-                     System.out.println("NOAOASADOASDOASDOA AO");
+                               
                 }
             // ---------------------------------------------------------- 
             /*

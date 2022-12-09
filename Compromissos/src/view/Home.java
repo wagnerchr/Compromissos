@@ -557,12 +557,12 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void contatosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_contatosMouseClicked
-        
-        this.setVisible(false);    
-        
-        VerContato vercontato = new VerContato(listaContatos.get(contatos.getAnchorSelectionIndex()), usuario);
-        vercontato.setVisible(true);
-                
+        if( contatos.getSelectedIndex() >= 0) {
+            this.setVisible(false);    
+
+            VerContato vercontato = new VerContato(listaContatos.get(contatos.getAnchorSelectionIndex()), usuario);
+            vercontato.setVisible(true);
+        }   
      
     }//GEN-LAST:event_contatosMouseClicked
 
@@ -594,12 +594,12 @@ public class Home extends javax.swing.JFrame {
     }//GEN-LAST:event_compromissosMouseClicked
 
     private void gruposMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_gruposMouseClicked
-       
-        this.setVisible(false);    
-        
-        VerGrupos vergrupos = new VerGrupos(listaGrupos.get(grupos.getAnchorSelectionIndex()), usuario);
-        vergrupos.setVisible(true);
-        
+        if( grupos.getSelectedIndex() >= 0) {
+            this.setVisible(false);    
+
+            VerGrupos vergrupos = new VerGrupos(listaGrupos.get(grupos.getAnchorSelectionIndex()), usuario);
+            vergrupos.setVisible(true);
+        }
     }//GEN-LAST:event_gruposMouseClicked
 
     private void dayChooser(java.awt.event.ActionEvent evt) {
