@@ -439,27 +439,33 @@ public class AddCompromisso extends javax.swing.JFrame {
             PreparedStatement ps = conn.prepareStatement(query);        
             ps.setInt(1, Integer.parseInt(getIdUsuario(usuario)) );
             
-            
-            
             ResultSet rs = ps.executeQuery();      
-            
-            System.out.println("ENTROUUU");
             
             while(rs.next()) {
                 
-                LocalDateTime dateInsert = rs.getTimestamp("data_inicio").toLocalDateTime();             
-                Instant instant = dateInsert.toInstant(ZoneOffset.UTC);
+                LocalDateTime dateInsertI = rs.getTimestamp("data_inicio").toLocalDateTime();             
+                LocalDateTime dateInsertF = rs.getTimestamp("data_fim").toLocalDateTime();  
+                
+                Instant instantI = dateInsertI.toInstant(ZoneOffset.UTC);
+                Instant instantF = dateInsertF.toInstant(ZoneOffset.UTC);
+                
                 Instant instant2 = (compromisso.getInicio()).toInstant(ZoneOffset.UTC);
                 Instant instant3 = (compromisso.getFim()).toInstant(ZoneOffset.UTC);
                   
-                Date dateInsertt = Date.from(instant);
+                Date dateI = Date.from(instantI);
+                Date dateF = Date.from(instantF);
+                
                 Date inicio = Date.from( instant2 );
                 Date fim = Date.from( instant3 );
                 
-                if( !(dateInsertt.before(inicio)) || (dateInsertt.after(fim)) )  {                  
+                if( !(dateI.before(inicio)) || (dateI.after(fim)) )  { 
                     JOptionPane.showMessageDialog(null, "Já existe um compromisso nesta data!");
-                    return;                   
-                }            
+                    return;   
+                }
+                if(!(dateF.before(inicio)  || (dateF.after(fim)) )) {
+                    JOptionPane.showMessageDialog(null, "Já existe um compromisso nesta data!");
+                    return;                              
+                }         
             }
             
             rs.close();
