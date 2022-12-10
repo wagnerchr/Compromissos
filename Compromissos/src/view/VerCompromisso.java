@@ -21,7 +21,6 @@ import java.util.Date;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import static view.AddCompromisso.usuario;
 import static view.AddGrupo.listaContatosAdd;
 import static view.VerContato.campos;
 
@@ -31,14 +30,15 @@ public class VerCompromisso extends javax.swing.JFrame {
     static Compromisso compromisso;
     static Usuario usuario;
     ConnectionFactory cf = new ConnectionFactory();
+    DefaultListModel demoList = new DefaultListModel();
 
     
-    ArrayList<Usuario> lista = new ArrayList<>();
-
+    ArrayList<Usuario> listaContatosParaInserir = new ArrayList<>();    
+    ArrayList<Usuario> listaContatosInseridos = new ArrayList<>();
+    int itemscomboBox = listaContatosParaInserir.size();
     
     static Boolean edit = false;
     
-    //int reply = JOptionPane.showConfirmDialog(null, "123", "231", JOptionPane.YES_NO_OPTION);
     public VerCompromisso(Compromisso compromisso, Usuario usuario) {
         
         initComponents();
@@ -46,8 +46,7 @@ public class VerCompromisso extends javax.swing.JFrame {
         this.setLocationRelativeTo(null);  
         this.setResizable(false);
         this.setDefaultCloseOperation(0);
-        
-       
+             
         this.getContentPane().setBackground(Color.decode("#CBEDD5"));
 
         this.compromisso = compromisso;
@@ -65,37 +64,40 @@ public class VerCompromisso extends javax.swing.JFrame {
         ));
            
         carregaTexto(campos, edit);
-        // Para adicionar mais contatos na Edição
-            exibeContatos();
+        exibeContatos();           
         carregaContatos(compromisso, usuario);
         
         
     }
     
-    
+ // LISTA DE CONTATOS COMBOBOX   
     private void exibeContatos() {
     
          DefaultListModel model = new DefaultListModel();  
-            lista.clear();
-            listaContatosAdd.clear();
+         
+            listaContatosParaInserir.clear();
+            listaContatosAdd.clear();          
+            comboboxContatos.removeAllItems();
+            
+            
+            
             ArrayList<Usuario> lista = carregaContatos(); 
-          
+            
             try {            
                 int count = 0;
-                while(lista.size() > count) {       
+                while(lista.size() > count) {          
                     
-                    listaContatosAdd.add(lista.get(count));
-                    comboboxContatos.addItem(lista.get(count).getNome());               
+                    //listaContatosAdd.add(lista.get(count));
+                    comboboxContatos.addItem( lista.get(count).getNome() );               
                     count++;
+                    
                 }                         
             } catch (Exception ex) {
                  JOptionPane.showMessageDialog(null, "Erro em exibeContatos: " + ex);
             }
-    
-    
     }
     
-// Contatos na comboBox para serem adicionados
+// CONTATOS NA COMBOBOX PARA SEREM ADICIONADOS
     public ArrayList<Usuario> carregaContatos() {
 
         try {
@@ -104,14 +106,14 @@ public class VerCompromisso extends javax.swing.JFrame {
             conn.setAutoCommit(false);
 
             String query = 
-            "SELECT * FROM pessoa p WHERE p.login is null AND p.id IN ( SELECT id_contato FROM pessoacontato pc WHERE pc.id_pessoa = ? ) AND p.id NOT IN ( SELECT id_pessoa FROM pessoacompromisso );";
+            "SELECT * FROM pessoa p WHERE p.login is null AND p.id IN ( SELECT id_contato FROM pessoacontato pc WHERE pc.id_pessoa = ? )"
+                    + " AND p.id NOT IN ( SELECT id_pessoa FROM pessoacompromisso );";
 
             int userId = Integer.valueOf(getIdUsuario(usuario));
             PreparedStatement ps = conn.prepareStatement(query);  
             ps.setInt(1, userId);
 
-            ResultSet rs = ps.executeQuery();            
-            // SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+            ResultSet rs = ps.executeQuery();                  
 
             while(rs.next()) {
 
@@ -127,7 +129,7 @@ public class VerCompromisso extends javax.swing.JFrame {
                         rs.getString("email")                      
                 );
   
-                lista.add(contato);      
+                listaContatosParaInserir.add(contato);      
             }
             
             conn.close();
@@ -139,10 +141,12 @@ public class VerCompromisso extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Erro em carregaContatos: " + ex);
         }   
         
-        return lista;
+        return listaContatosParaInserir;
     };
+//
     
     
+// PEGAR ID CONTATO  
     public String getIdUsuario(Usuario usuario) throws SQLException {
 
        UserConnection connection_usuario = new UserConnection(); 
@@ -157,22 +161,11 @@ public class VerCompromisso extends javax.swing.JFrame {
 
        return idUsuario;
     } 
-    
+// 
     
     private void displayWindow() {
      
-        ArrayList<JTextField> campos = new ArrayList<JTextField>( Arrays.asList(
-                textNome,
-                textDescricao,
-                textLocal,
-                textInicio
-        
-        ));
-                
-                
-        
-        
-        
+
         textNome.setText(compromisso.getNome());
         textNome.setFont(new Font("Roboto", Font.BOLD, 32));
         textDescricao.setText(compromisso.getDescricao());
@@ -183,11 +176,13 @@ public class VerCompromisso extends javax.swing.JFrame {
         
         textInicio.setText(inicio.substring(0, 10) + " " + inicio.substring(11));
         textFim.setText(fim.substring(0, 10) + " " + fim.substring(11));
+        
+        btnAddContact.setEnabled(false);
+        btnRemoveContact.setEnabled(false);
     
     }
 
-    public void carregaTexto(ArrayList<JTextField> campos, Boolean e) {
-        
+    public void carregaTexto(ArrayList<JTextField> campos, Boolean e) {             
         for(int i = 0; i < campos.size(); i++) 
             campos.get(i).setEnabled(e);                
     }
@@ -198,31 +193,40 @@ public class VerCompromisso extends javax.swing.JFrame {
            
         try {      
             
-            ConnectionFactory cf = new ConnectionFactory();
+            // Reset JList
+            demoList.removeAllElements();
+            jListContatos.setModel(demoList);
+                             
             conn = cf.getConnection();
             conn.setAutoCommit(false);
                      
             String query = "SELECT * FROM pessoa p WHERE login is null AND p.id IN ( SELECT id_pessoa FROM pessoacompromisso pc WHERE pc.id_compromisso = ?);";
-                    
-            
+                            
             PreparedStatement ps = conn.prepareStatement(query);  
-            ps.setInt(1, compromisso.getId());
-                     
+            ps.setInt(1, compromisso.getId());                    
             ResultSet rs = ps.executeQuery();            
                        
-            DefaultListModel demoList = new DefaultListModel();
-
-            while(rs.next()) {               
-                demoList.addElement(rs.getString("nome"));                               
+          
+            while(rs.next()) {                           
+                       
+                Usuario contato = new Usuario(
+                        rs.getString("nome"),
+                        rs.getInt("id"),
+                        rs.getDate("data_nasc"),
+                        rs.getString("endereco"),
+                        rs.getString("telefone"),
+                        rs.getString("email")
+                );
+                
+                demoList.addElement(contato.getNome());      
+                listaContatosInseridos.add(contato);                   
             }
                        
-            listContatos.setModel(demoList);
-                     
-                                  
+            jListContatos.setModel(demoList);
+                                                       
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "Erro em carregaContatos: " + ex);
-        }    
-        
+        }          
     }
     
     /* LATTER LATTER LATTER LATTER LATTER LATTER 
@@ -325,8 +329,11 @@ public class VerCompromisso extends javax.swing.JFrame {
                     fim
             );
             
- 
+
             InsereCompromissoBanco(compromissoEdit);
+            InsereContatosCompromisso();
+
+            
             
             this.setVisible(false);
             Home home = new Home(usuario);
@@ -364,6 +371,8 @@ public class VerCompromisso extends javax.swing.JFrame {
             conn.commit();
             ps.close();
             
+            InsereContatosCompromisso();
+                     
             //ConectaContato(contato);
             JOptionPane.showMessageDialog(null, "Compromisso editado com sucesso!");
             
@@ -387,10 +396,10 @@ public class VerCompromisso extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        listContatos = new javax.swing.JList<>();
+        jListContatos = new javax.swing.JList<>();
         jLabel1 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        btnAddContact = new javax.swing.JButton();
+        btnRemoveContact = new javax.swing.JButton();
         comboboxContatos = new javax.swing.JComboBox<>();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -437,18 +446,28 @@ public class VerCompromisso extends javax.swing.JFrame {
             }
         });
 
-        listContatos.setModel(new javax.swing.AbstractListModel<String>() {
+        jListContatos.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = {""};
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
-        jScrollPane1.setViewportView(listContatos);
+        jScrollPane1.setViewportView(jListContatos);
 
         jLabel1.setText("Contatos adicionados: ");
 
-        jButton1.setText("Add");
+        btnAddContact.setText("Add");
+        btnAddContact.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddContactActionPerformed(evt);
+            }
+        });
 
-        jButton4.setText("Remover");
+        btnRemoveContact.setText("Remover");
+        btnRemoveContact.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRemoveContactActionPerformed(evt);
+            }
+        });
 
         comboboxContatos.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {}));
         comboboxContatos.addActionListener(new java.awt.event.ActionListener() {
@@ -500,9 +519,9 @@ public class VerCompromisso extends javax.swing.JFrame {
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGroup(layout.createSequentialGroup()
-                                            .addComponent(jButton4)
+                                            .addComponent(btnRemoveContact)
                                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                            .addComponent(btnAddContact, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                     .addComponent(btnEdit))
                                 .addGap(20, 20, 20))))))
         );
@@ -534,8 +553,8 @@ public class VerCompromisso extends javax.swing.JFrame {
                         .addComponent(comboboxContatos, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton4)
-                            .addComponent(jButton1)))
+                            .addComponent(btnRemoveContact)
+                            .addComponent(btnAddContact)))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(textFim, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(110, 110, 110)
@@ -571,7 +590,10 @@ public class VerCompromisso extends javax.swing.JFrame {
         if(!edit) {              
             edit = true;
             carregaTexto(campos, edit);
-            btnEdit.setText("Confirmar");
+                btnAddContact.setEnabled(true);
+                btnRemoveContact.setEnabled(true);
+                
+                btnEdit.setText("Confirmar");
         } else {
             
             edit = false;
@@ -582,6 +604,7 @@ public class VerCompromisso extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         try {
+            edit = false;
             this.dispose();
             conn.close();
             new Home(usuario).setVisible(true);
@@ -604,6 +627,116 @@ public class VerCompromisso extends javax.swing.JFrame {
 
     }//GEN-LAST:event_comboboxContatosActionPerformed
 
+    private void btnRemoveContactActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveContactActionPerformed
+        removeContato();
+    }//GEN-LAST:event_btnRemoveContactActionPerformed
+
+    private void btnAddContactActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddContactActionPerformed
+       
+        demoList.addElement( comboboxContatos.getSelectedItem() );
+        listaContatosInseridos.add( listaContatosParaInserir.get( comboboxContatos.getSelectedIndex()) );
+        listaContatosParaInserir.remove(comboboxContatos.getSelectedIndex());
+        
+        comboboxContatos.removeItem( comboboxContatos.getSelectedItem() );
+        
+        jListContatos.setModel(demoList); 
+       
+        
+    }//GEN-LAST:event_btnAddContactActionPerformed
+
+    
+    
+    
+    private void InsereContatosCompromisso() {
+    
+        
+        ArrayList<Integer> contatosids = new ArrayList<Integer>();
+          
+        for(int i = 0; i < listaContatosInseridos.size(); i++) {              
+            for(int j = 0; j < jListContatos.getModel().getSize(); j++) {              
+                if( ( listaContatosInseridos.get(i).getNome() ).equals( jListContatos.getModel().getElementAt(j)) )         
+                    contatosids.add( (listaContatosInseridos.get(i).getId()) );           
+            }              
+        }
+     
+       InsereContatoBanco(contatosids);
+    
+    }
+ 
+    private void InsereContatoBanco(ArrayList<Integer> contatosIds) {
+         
+        try {    
+            
+            String query = "INSERT INTO pessoacompromisso() VALUES(?, ?)";
+            
+            ConnectionFactory cf = new ConnectionFactory();
+            conn = cf.getConnection();
+            conn.setAutoCommit(false);
+            
+            PreparedStatement ps;
+
+            ps = conn.prepareStatement(query);
+            
+            System.out.println("VEJA AQUI : " + listaContatosInseridos);
+            System.out.println("contatos IDS: " +contatosIds);
+            
+            for(int i = 0; i < contatosIds.size(); i++) {
+                             
+                ps.setInt(1, contatosIds.get(i) );
+                ps.setInt(2, compromisso.getId());
+                
+                ps.execute();
+  
+            }
+            
+            conn.commit();
+            ps.close();
+            
+    }catch(SQLException ex) {
+            System.out.println(ex);
+    }
+    
+    }
+    
+    
+    private void removeContato() {
+    
+        String query = "DELETE FROM pessoacompromisso WHERE id_pessoa = ?";
+        PreparedStatement ps;
+         
+        try {
+                    
+            conn = cf.getConnection();
+            conn.setAutoCommit(false);
+                         
+            // Erro com lista vazia
+            if( jListContatos.getSelectedIndex() < 0) {
+                JOptionPane.showMessageDialog(null, "Selecione um usuário para removê-lo ");
+                return;
+            }
+                           
+            ps = conn.prepareStatement(query);           
+            ps.setInt(1, listaContatosInseridos.get(jListContatos.getSelectedIndex()).getId());
+
+            ps.executeUpdate();
+            conn.commit();
+            ps.close();  
+                        
+            carregaContatos(compromisso, usuario);
+            exibeContatos();
+                    
+            
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(null, "Erro ao removerContato " + ex.getMessage());     
+        }
+      
+    
+    }
+    
+    
+    
+    
+    
     private void excluirCompromisso(Compromisso compromisso) {
     
         String query = "DELETE FROM pessoacompromisso WHERE id_compromisso = ?";       
@@ -695,18 +828,18 @@ public class VerCompromisso extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAddContact;
     private javax.swing.JButton btnEdit;
+    private javax.swing.JButton btnRemoveContact;
     private javax.swing.JComboBox<String> comboboxContatos;
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JList<String> jListContatos;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JList<String> listContatos;
     private javax.swing.JTextField textDescricao;
     private javax.swing.JTextField textFim;
     private javax.swing.JTextField textInicio;
