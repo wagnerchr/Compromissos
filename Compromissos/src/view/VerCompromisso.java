@@ -4,28 +4,37 @@ import java.sql.Connection;
 import compromissos2.Compromisso;
 import compromissos2.Usuario;
 import compromissos2.connections.ConnectionFactory;
+import compromissos2.connections.UserConnection;
+import java.awt.Color;
+import java.awt.Font;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
-import static view.Home.listaContatos;
-import static view.Home.usuario;
+import static view.AddCompromisso.usuario;
+import static view.AddGrupo.listaContatosAdd;
 import static view.VerContato.campos;
-import static view.VerContato.contato;
 
 
 public class VerCompromisso extends javax.swing.JFrame {
 
     static Compromisso compromisso;
     static Usuario usuario;
+    ConnectionFactory cf = new ConnectionFactory();
+
+    
+    ArrayList<Usuario> lista = new ArrayList<>();
+
     
     static Boolean edit = false;
     
@@ -34,24 +43,18 @@ public class VerCompromisso extends javax.swing.JFrame {
         
         initComponents();
         
-        this.compromisso = compromisso;
-        this.usuario = usuario;
-          
         this.setLocationRelativeTo(null);  
         this.setResizable(false);
-        this.setDefaultCloseOperation(0);    
+        this.setDefaultCloseOperation(0);
         
+       
+        this.getContentPane().setBackground(Color.decode("#CBEDD5"));
+
+        this.compromisso = compromisso;
+        this.usuario = usuario;
         
-        textNome.setText(compromisso.getNome());
-        textDescricao.setText(compromisso.getDescricao());
-        textLocal.setText(compromisso.getLocalc());
-    
-        String inicio = compromisso.getInicio().toString();
-        String fim = compromisso.getFim().toString();
-        
-        textInicio.setText(inicio.substring(0, 10) + " " + inicio.substring(11));
-        textFim.setText(fim.substring(0, 10) + " " + fim.substring(11));
-                 
+        displayWindow();
+
         
         campos.addAll(Arrays.asList(      
                 textNome,
@@ -60,14 +63,127 @@ public class VerCompromisso extends javax.swing.JFrame {
                 textInicio,
                 textFim      
         ));
-        
-     
+           
         carregaTexto(campos, edit);
+        // Para adicionar mais contatos na Edição
+            exibeContatos();
         carregaContatos(compromisso, usuario);
         
         
-        // Latter
-        //carregaContatos(compromisso, usuario);
+    }
+    
+    
+    private void exibeContatos() {
+    
+         DefaultListModel model = new DefaultListModel();  
+            lista.clear();
+            listaContatosAdd.clear();
+            ArrayList<Usuario> lista = carregaContatos(); 
+          
+            try {            
+                int count = 0;
+                while(lista.size() > count) {       
+                    
+                    listaContatosAdd.add(lista.get(count));
+                    comboboxContatos.addItem(lista.get(count).getNome());               
+                    count++;
+                }                         
+            } catch (Exception ex) {
+                 JOptionPane.showMessageDialog(null, "Erro em exibeContatos: " + ex);
+            }
+    
+    
+    }
+    
+// Contatos na comboBox para serem adicionados
+    public ArrayList<Usuario> carregaContatos() {
+
+        try {
+            //ConnectionFactory cf = new ConnectionFactory();
+            conn = cf.getConnection();
+            conn.setAutoCommit(false);
+
+            String query = 
+            "SELECT * FROM pessoa p WHERE p.login is null AND p.id IN ( SELECT id_contato FROM pessoacontato pc WHERE pc.id_pessoa = ? ) AND p.id NOT IN ( SELECT id_pessoa FROM pessoacompromisso );";
+
+            int userId = Integer.valueOf(getIdUsuario(usuario));
+            PreparedStatement ps = conn.prepareStatement(query);  
+            ps.setInt(1, userId);
+
+            ResultSet rs = ps.executeQuery();            
+            // SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+
+            while(rs.next()) {
+
+                SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd"); 
+                Date date = formato.parse(rs.getString("data_nasc")); 
+
+                Usuario contato = new Usuario(
+                        rs.getString("nome"),
+                        rs.getInt("id"),                 
+                        date,
+                        rs.getString("endereco"),
+                        rs.getString("telefone"),
+                        rs.getString("email")                      
+                );
+  
+                lista.add(contato);      
+            }
+            
+            conn.close();
+
+            
+        } catch (SQLException ex) {           
+            JOptionPane.showMessageDialog(null, "Erro em carregaContatos: " + ex);
+        } catch (ParseException ex) {        
+            JOptionPane.showMessageDialog(null, "Erro em carregaContatos: " + ex);
+        }   
+        
+        return lista;
+    };
+    
+    
+    public String getIdUsuario(Usuario usuario) throws SQLException {
+
+       UserConnection connection_usuario = new UserConnection(); 
+
+       ResultSet rsUsuario = connection_usuario.autenticacao(usuario);           
+       String idUsuario = "";
+
+       if(rsUsuario.next()) 
+           idUsuario = rsUsuario.getString("id");
+       else 
+           JOptionPane.showMessageDialog(null, "Problema ao estabelecer conexão com o usuário");
+
+       return idUsuario;
+    } 
+    
+    
+    private void displayWindow() {
+     
+        ArrayList<JTextField> campos = new ArrayList<JTextField>( Arrays.asList(
+                textNome,
+                textDescricao,
+                textLocal,
+                textInicio
+        
+        ));
+                
+                
+        
+        
+        
+        textNome.setText(compromisso.getNome());
+        textNome.setFont(new Font("Roboto", Font.BOLD, 32));
+        textDescricao.setText(compromisso.getDescricao());
+        textLocal.setText(compromisso.getLocalc());
+    
+        String inicio = compromisso.getInicio().toString();
+        String fim = compromisso.getFim().toString();
+        
+        textInicio.setText(inicio.substring(0, 10) + " " + inicio.substring(11));
+        textFim.setText(fim.substring(0, 10) + " " + fim.substring(11));
+    
     }
 
     public void carregaTexto(ArrayList<JTextField> campos, Boolean e) {
@@ -76,6 +192,8 @@ public class VerCompromisso extends javax.swing.JFrame {
             campos.get(i).setEnabled(e);                
     }
     
+    
+// CONTATOS QUE FAZEM PARTE DO COMPROMISSO
     private void carregaContatos(Compromisso compromisso, Usuario usuario) {
            
         try {      
@@ -271,6 +389,12 @@ public class VerCompromisso extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         listContatos = new javax.swing.JList<>();
         jLabel1 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
+        comboboxContatos = new javax.swing.JComboBox<>();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -322,64 +446,105 @@ public class VerCompromisso extends javax.swing.JFrame {
 
         jLabel1.setText("Contatos adicionados: ");
 
+        jButton1.setText("Add");
+
+        jButton4.setText("Remover");
+
+        comboboxContatos.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] {}));
+        comboboxContatos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboboxContatosActionPerformed(evt);
+            }
+        });
+
+        jLabel2.setText("Local do Compromisso: ");
+
+        jLabel3.setText("Inicio do Evento");
+
+        jLabel4.setText("Fim do Evento");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(20, 20, 20)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton3)
-                        .addGap(173, 173, 173)
-                        .addComponent(btnEdit)
-                        .addContainerGap())
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(textNome)
-                                .addComponent(textDescricao, javax.swing.GroupLayout.DEFAULT_SIZE, 304, Short.MAX_VALUE)
-                                .addComponent(textLocal, javax.swing.GroupLayout.PREFERRED_SIZE, 265, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(textNome, javax.swing.GroupLayout.PREFERRED_SIZE, 465, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel2)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(textInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(55, 55, 55)
-                                .addComponent(textFim, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 82, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel3)
+                                    .addComponent(textInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jButton2))
+                                .addGap(32, 32, 32)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jButton3)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel4)
+                                        .addComponent(textFim, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(textLocal)
+                            .addComponent(textDescricao))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 78, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(30, 30, 30))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addGap(65, 65, 65))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(comboboxContatos, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 214, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addComponent(jButton4)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(btnEdit))
+                                .addGap(20, 20, 20))))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(30, 30, 30)
                 .addComponent(textNome, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(textDescricao, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(25, 25, 25)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(textDescricao, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(23, 23, 23)
+                        .addComponent(jLabel2)
+                        .addGap(9, 9, 9)
+                        .addComponent(textLocal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(67, 67, 67)
-                        .addComponent(jLabel1))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel4)))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(50, 50, 50)
-                        .addComponent(textLocal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(11, 11, 11)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(108, 108, 108)
+                        .addComponent(comboboxContatos, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(textInicio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(textFim, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 112, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnEdit)
-                    .addComponent(jButton2)
-                    .addComponent(jButton3))
-                .addContainerGap())
+                            .addComponent(jButton4)
+                            .addComponent(jButton1)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(textFim, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(110, 110, 110)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(textInicio, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(28, Short.MAX_VALUE))
         );
 
         pack();
@@ -416,8 +581,13 @@ public class VerCompromisso extends javax.swing.JFrame {
     }//GEN-LAST:event_btnEditActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-       this.setVisible(false);
-       new Home(usuario).setVisible(true);
+        try {
+            this.dispose();
+            conn.close();
+            new Home(usuario).setVisible(true);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, "Erro ao voltar para Home " + ex.getMessage());
+        }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
@@ -429,6 +599,10 @@ public class VerCompromisso extends javax.swing.JFrame {
         else 
              System.exit(0);
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void comboboxContatosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboboxContatosActionPerformed
+
+    }//GEN-LAST:event_comboboxContatosActionPerformed
 
     private void excluirCompromisso(Compromisso compromisso) {
     
@@ -522,9 +696,15 @@ public class VerCompromisso extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnEdit;
+    private javax.swing.JComboBox<String> comboboxContatos;
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JList<String> listContatos;
     private javax.swing.JTextField textDescricao;

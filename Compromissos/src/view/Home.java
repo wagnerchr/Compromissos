@@ -52,7 +52,7 @@ public class Home extends javax.swing.JFrame {
         
         displayWindow();
        
-  
+    /*
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -64,6 +64,7 @@ public class Home extends javax.swing.JFrame {
                 }         
             }
         });         
+    */
     }    
                      
     private void displayWindow() {
@@ -71,7 +72,7 @@ public class Home extends javax.swing.JFrame {
     
         this.setLocationRelativeTo(null);         
         this.setResizable(false);
-        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         labelHello.setText("Bem-vindo, " + usuario.getNome());
         labelHello.setFont(new Font("Roboto", Font.PLAIN, 32));
