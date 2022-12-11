@@ -75,26 +75,24 @@ public class VerCompromisso extends javax.swing.JFrame {
     
          DefaultListModel model = new DefaultListModel();  
          
-            listaContatosParaInserir.clear();
-            listaContatosAdd.clear();          
-            comboboxContatos.removeAllItems();
-            
-            
-            
-            ArrayList<Usuario> lista = carregaContatos(); 
-            
-            try {            
-                int count = 0;
-                while(lista.size() > count) {          
-                    
-                    //listaContatosAdd.add(lista.get(count));
-                    comboboxContatos.addItem( lista.get(count).getNome() );               
-                    count++;
-                    
-                }                         
-            } catch (Exception ex) {
-                 JOptionPane.showMessageDialog(null, "Erro em exibeContatos: " + ex);
-            }
+        listaContatosParaInserir.clear();
+        listaContatosAdd.clear();          
+        comboboxContatos.removeAllItems();
+      
+        ArrayList<Usuario> lista = carregaContatos(); 
+
+        try {            
+            int count = 0;
+            while(lista.size() > count) {          
+
+                //listaContatosAdd.add(lista.get(count));
+                comboboxContatos.addItem( lista.get(count).getNome() );               
+                count++;
+
+            }                         
+        } catch (Exception ex) {
+             JOptionPane.showMessageDialog(null, "Erro em exibeContatos: " + ex);
+        }
     }
     
 // CONTATOS NA COMBOBOX PARA SEREM ADICIONADOS
@@ -639,9 +637,7 @@ public class VerCompromisso extends javax.swing.JFrame {
         
         comboboxContatos.removeItem( comboboxContatos.getSelectedItem() );
         
-        jListContatos.setModel(demoList); 
-       
-        
+        jListContatos.setModel(demoList);     
     }//GEN-LAST:event_btnAddContactActionPerformed
 
     
@@ -706,15 +702,16 @@ public class VerCompromisso extends javax.swing.JFrame {
          
         try {
                     
-            conn = cf.getConnection();
-            conn.setAutoCommit(false);
-                         
+                    
             // Erro com lista vazia
             if( jListContatos.getSelectedIndex() < 0) {
                 JOptionPane.showMessageDialog(null, "Selecione um usuário para removê-lo ");
                 return;
             }
-                           
+            
+            conn = cf.getConnection();
+            conn.setAutoCommit(false);
+                                         
             ps = conn.prepareStatement(query);           
             ps.setInt(1, listaContatosInseridos.get(jListContatos.getSelectedIndex()).getId());
 

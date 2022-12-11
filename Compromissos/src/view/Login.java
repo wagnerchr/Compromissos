@@ -40,7 +40,11 @@ public class Login extends javax.swing.JFrame {
     public void loginScreen() {
                            
         this.setVisible(true);
+        this.setBackground(Color.decode("#CBEDD5"));
         
+        labelUsuario.setFont( new Font("Roboto", Font.PLAIN, 18 ));
+        labelSenha.setFont( new Font("Roboto", Font.PLAIN, 18 ));
+              
         icon2.setVisible(false);
    
         labelLogin.setFont(new Font("Comic Sans", Font.BOLD, 25));
@@ -51,7 +55,7 @@ public class Login extends javax.swing.JFrame {
         this.setResizable(false);
         this.setLocationRelativeTo(null);
     
-        loginFundo.setBackground(Color.decode("#CDF0EA"));
+       
     }
     
     
