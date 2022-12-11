@@ -23,8 +23,9 @@ public class Login extends javax.swing.JFrame {
     public Login() {
         
         
-        initComponents();   
-             
+        initComponents(); 
+        
+
       
         loginScreen();
         
@@ -39,18 +40,33 @@ public class Login extends javax.swing.JFrame {
 // INICIA TELA LOGIN
     public void loginScreen() {
                            
-        this.setVisible(true);
-        this.setBackground(Color.decode("#CBEDD5"));
+        this.setVisible(true);       
+        jPanel.setBackground(Color.decode("#CBEDD5"));
+      
         
-        labelUsuario.setFont( new Font("Roboto", Font.PLAIN, 18 ));
-        labelSenha.setFont( new Font("Roboto", Font.PLAIN, 18 ));
+
+        btnLogin.setBackground(Color.decode("#62B6B7"));
+        btnCadastro.setBackground(Color.decode("#62B6B7"));
+        btnLogin.setOpaque(true);
+        btnCadastro.setOpaque(true);
+        btnLogin.setBorderPainted(false);
+        btnCadastro.setBorderPainted(false);
+        
+        checkLogin.setBackground(Color.decode("#CBEDD5"));
+        
+        checkLogin.setOpaque(true);
+        
+        btnLogin.setForeground(Color.WHITE);
+        btnCadastro.setForeground(Color.WHITE);
+        
+        btnLogin.setFont(btnLogin.getFont().deriveFont(Font.BOLD));
+        btnCadastro.setFont(btnCadastro.getFont().deriveFont(Font.BOLD));
+
+
               
         icon2.setVisible(false);
    
-        labelLogin.setFont(new Font("Comic Sans", Font.BOLD, 25));
-        labelLogin.setAlignmentX(500);
-        labelLogin.setAlignmentY(500);
-        
+
         this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         this.setResizable(false);
         this.setLocationRelativeTo(null);
@@ -186,17 +202,18 @@ public class Login extends javax.swing.JFrame {
         jMenuItem1 = new javax.swing.JMenuItem();
         jToggleButton1 = new javax.swing.JToggleButton();
         loginFundo = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
         textLogin = new javax.swing.JTextField();
-        buttonLogin = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        labelLogin = new javax.swing.JLabel();
+        btnLogin = new javax.swing.JButton();
         textSenha = new javax.swing.JPasswordField();
         icon1 = new javax.swing.JLabel();
         checkLogin = new javax.swing.JCheckBox();
         labelUsuario = new javax.swing.JLabel();
         labelSenha = new javax.swing.JLabel();
         icon2 = new javax.swing.JLabel();
+        jPanel = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        btnCadastro = new javax.swing.JButton();
+        labelMessage = new javax.swing.JLabel();
 
         jMenuItem1.setText("jMenuItem1");
 
@@ -205,34 +222,21 @@ public class Login extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         loginFundo.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel2.setText(" Nãso possui Conta?");
-        loginFundo.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 350, 110, 20));
         loginFundo.add(textLogin, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 140, 300, 30));
 
-        buttonLogin.setText("Fazer Login");
-        buttonLogin.addActionListener(new java.awt.event.ActionListener() {
+        btnLogin.setFont(new java.awt.Font("Microsoft YaHei", 1, 12)); // NOI18N
+        btnLogin.setText("Fazer Login");
+        btnLogin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                buttonLoginActionPerformed(evt);
+                btnLoginActionPerformed(evt);
             }
         });
-        loginFundo.add(buttonLogin, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 260, -1, 30));
-
-        jButton2.setText("Cadastre-se");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
-        loginFundo.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 380, 110, 30));
-
-        labelLogin.setText("Fazer Login");
-        labelLogin.setMaximumSize(new java.awt.Dimension(500, 500));
-        loginFundo.add(labelLogin, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 50, 240, 50));
+        loginFundo.add(btnLogin, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 260, -1, 40));
         loginFundo.add(textSenha, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 180, 300, 30));
 
+        icon1.setForeground(new java.awt.Color(102, 102, 255));
         icon1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        icon1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/view/eye-12109 (2).png"))); // NOI18N
+        icon1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/view/senhahide3.png")));
         icon1.setMaximumSize(new java.awt.Dimension(50, 50));
         icon1.setMinimumSize(new java.awt.Dimension(50, 50));
         icon1.setPreferredSize(new java.awt.Dimension(50, 50));
@@ -243,29 +247,79 @@ public class Login extends javax.swing.JFrame {
         });
         loginFundo.add(icon1, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 180, 40, 30));
 
+        checkLogin.setFont(new java.awt.Font("Microsoft YaHei", 1, 12)); // NOI18N
         checkLogin.setText("Lembrar de mim");
         loginFundo.add(checkLogin, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 220, -1, -1));
 
+        labelUsuario.setFont(new java.awt.Font("Microsoft YaHei", 1, 12)); // NOI18N
         labelUsuario.setText("Usuario");
-        loginFundo.add(labelUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 140, -1, -1));
+        loginFundo.add(labelUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 140, 50, 30));
 
+        labelSenha.setFont(new java.awt.Font("Microsoft YaHei", 1, 12)); // NOI18N
         labelSenha.setText("Senha");
-        loginFundo.add(labelSenha, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 180, -1, -1));
+        loginFundo.add(labelSenha, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 180, 50, 30));
 
-        icon2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/view/hidden-12115 (3).png"))); // NOI18N
+        icon2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/view/senhashow.png")));
         icon2.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         icon2.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 icon2MouseClicked(evt);
             }
         });
-        loginFundo.add(icon2, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 180, 40, -1));
+        loginFundo.add(icon2, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 180, 40, 30));
+
+        jLabel2.setFont(new java.awt.Font("Microsoft YaHei", 1, 12)); // NOI18N
+        jLabel2.setText(" Nãso possui Conta?");
+
+        btnCadastro.setFont(new java.awt.Font("Microsoft YaHei", 1, 12)); // NOI18N
+        btnCadastro.setText("Cadastre-se");
+        btnCadastro.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCadastroActionPerformed(evt);
+            }
+        });
+
+        labelMessage.setFont(new java.awt.Font("Microsoft YaHei", 1, 36)); // NOI18N
+        labelMessage.setForeground(new java.awt.Color(67, 154, 151));
+        labelMessage.setText("Bem-vindo!");
+
+        javax.swing.GroupLayout jPanelLayout = new javax.swing.GroupLayout(jPanel);
+        jPanel.setLayout(jPanelLayout);
+        jPanelLayout.setHorizontalGroup(
+            jPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanelLayout.createSequentialGroup()
+                .addGap(133, 133, 133)
+                .addGroup(jPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelLayout.createSequentialGroup()
+                        .addComponent(btnCadastro, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(180, 180, 180))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelLayout.createSequentialGroup()
+                        .addComponent(labelMessage)
+                        .addGap(130, 130, 130))))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(151, 151, 151))
+        );
+        jPanelLayout.setVerticalGroup(
+            jPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelLayout.createSequentialGroup()
+                .addGap(41, 41, 41)
+                .addComponent(labelMessage)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 270, Short.MAX_VALUE)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnCadastro, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(22, 22, 22))
+        );
+
+        loginFundo.add(jPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -10, 490, 450));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(loginFundo, javax.swing.GroupLayout.DEFAULT_SIZE, 490, Short.MAX_VALUE)
+            .addComponent(loginFundo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -278,15 +332,15 @@ public class Login extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
 // EVENTS
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void btnCadastroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastroActionPerformed
         Cadastro cadastro = new Cadastro();
         cadastro.setVisible(true);
         this.setVisible(false);
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_btnCadastroActionPerformed
 
-    private void buttonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonLoginActionPerformed
+    private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
          Connection(textLogin.getText(), textSenha.getText());
-    }//GEN-LAST:event_buttonLoginActionPerformed
+    }//GEN-LAST:event_btnLoginActionPerformed
 
 // VER SENHA
     private void icon1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_icon1MouseClicked
@@ -334,15 +388,16 @@ public class Login extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton buttonLogin;
+    private javax.swing.JButton btnCadastro;
+    private javax.swing.JButton btnLogin;
     private javax.swing.JCheckBox checkLogin;
     private javax.swing.JLabel icon1;
     private javax.swing.JLabel icon2;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JPanel jPanel;
     private javax.swing.JToggleButton jToggleButton1;
-    private javax.swing.JLabel labelLogin;
+    private javax.swing.JLabel labelMessage;
     private javax.swing.JLabel labelSenha;
     private javax.swing.JLabel labelUsuario;
     private javax.swing.JPanel loginFundo;
