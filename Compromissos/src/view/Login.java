@@ -41,7 +41,7 @@ public class Login extends javax.swing.JFrame {
     public void loginScreen() {
                            
         this.setVisible(true);       
-        jPanel.setBackground(Color.decode("#CBEDD5"));
+        jPanel.setBackground(Color.decode("#CBF1F5"));
       
         
 
@@ -52,7 +52,7 @@ public class Login extends javax.swing.JFrame {
         btnLogin.setBorderPainted(false);
         btnCadastro.setBorderPainted(false);
         
-        checkLogin.setBackground(Color.decode("#CBEDD5"));
+        checkLogin.setBackground(Color.decode("#CBF1F5"));
         
         checkLogin.setOpaque(true);
         
@@ -306,14 +306,14 @@ public class Login extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanelLayout.createSequentialGroup()
                 .addGap(41, 41, 41)
                 .addComponent(labelMessage)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 270, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 260, Short.MAX_VALUE)
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnCadastro, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(22, 22, 22))
         );
 
-        loginFundo.add(jPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, -10, 490, 450));
+        loginFundo.add(jPanel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 490, 440));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

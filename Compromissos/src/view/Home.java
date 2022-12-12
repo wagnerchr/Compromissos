@@ -10,9 +10,6 @@ import java.sql.Connection;
 import compromissos2.connections.UserConnection;
 import compromissos2.Usuario;
 import java.awt.Color;
-import java.awt.Font;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -20,8 +17,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
 import javax.swing.DefaultListModel;
+import javax.swing.UIManager;
 
 
 
@@ -42,43 +41,35 @@ public class Home extends javax.swing.JFrame {
     ConnectionFactory cf = new ConnectionFactory();
     Connection conn;
     
+    
     public Home(Usuario usuario) {
         
-        initComponents();
-        
-        this.usuario = usuario;
-
-        /// dasnjdasb njdasnj 
-        
+        initComponents();        
+        this.usuario = usuario; 
         displayWindow();
-       
-    /*
-        this.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                try {
-                    super.windowClosing(e);
-                    conn.close();
-                } catch(SQLException ex) {
-                    System.out.println("rolou algo");
-                }         
-            }
-        });         
-    */
+        
     }    
                      
     private void displayWindow() {
-    
-    
+        
         this.setLocationRelativeTo(null);         
         this.setResizable(false);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        labelHello.setText("Bem-vindo, " + usuario.getNome());
-        labelHello.setFont(new Font("Roboto", Font.PLAIN, 32));
+        labelHello.setText("Olá, " + usuario.getNome());
+     
+        this.getContentPane().setBackground(Color.decode("#CBF1F5"));
+        UIManager.put( contatos, BorderFactory.createEmptyBorder());
+
+        //iconPhoto.setBackground(Color.red);
         
-        iconPhoto.setBackground(Color.red);
-        
+        btnCriaCadastro.setOpaque(true);
+        btnCriaGrupo.setOpaque(true);
+        btnSair.setOpaque(true);
+
+        btnCriaCadastro.setBorderPainted(false);
+        btnCriaGrupo.setBorderPainted(false);
+        btnSair.setBorderPainted(false);
             
         // Load JLists
             exibeCompromissos();
@@ -363,13 +354,13 @@ public class Home extends javax.swing.JFrame {
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         contatos = new javax.swing.JList<>();
-        jButton1 = new javax.swing.JButton();
+        btnCriaCadastro = new javax.swing.JButton();
         jTabbedPane3 = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         grupos = new javax.swing.JList<>();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        btnCriaGrupo = new javax.swing.JButton();
+        btnSair = new javax.swing.JButton();
         iconPhoto = new javax.swing.JLabel();
 
         jList1.setModel(new javax.swing.AbstractListModel<String>() {
@@ -381,13 +372,31 @@ public class Home extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        labelHello.setText(" ");
+        Calendario.setBackground(new java.awt.Color(113, 201, 206));
+        Calendario.setForeground(new java.awt.Color(0, 0, 0));
+        Calendario.setDecorationBackgroundColor(new java.awt.Color(113, 201, 206));
+        Calendario.setSundayForeground(new java.awt.Color(204, 204, 255));
+        Calendario.setWeekOfYearVisible(false);
 
+        labelHello.setFont(new java.awt.Font("Microsoft YaHei", 0, 36)); // NOI18N
+        labelHello.setText("Olá, ");
+
+        Lista.setBackground(new java.awt.Color(113, 201, 206));
+        Lista.setForeground(new java.awt.Color(0, 0, 0));
+        Lista.setFont(new java.awt.Font("Microsoft YaHei", 0, 12)); // NOI18N
+
+        jTabbedPane1.setBackground(new java.awt.Color(227, 253, 253));
+
+        JPanelLista.setBackground(new java.awt.Color(203, 241, 245));
+
+        compromissos.setBackground(new java.awt.Color(227, 253, 253));
+        compromissos.setFont(new java.awt.Font("Microsoft YaHei", 0, 12)); // NOI18N
         compromissos.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = {""};
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
+        compromissos.setSelectionBackground(new java.awt.Color(203, 241, 245));
         compromissos.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 compromissosMouseClicked(evt);
@@ -403,20 +412,23 @@ public class Home extends javax.swing.JFrame {
         );
         JPanelListaLayout.setVerticalGroup(
             JPanelListaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, JPanelListaLayout.createSequentialGroup()
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 495, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 501, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("", JPanelLista);
 
         Lista.addTab("Compromissos", jTabbedPane1);
 
+        jPanel3.setBackground(new java.awt.Color(203, 241, 245));
+
+        contatos.setBackground(new java.awt.Color(227, 253, 253));
+        contatos.setFont(new java.awt.Font("Microsoft YaHei", 0, 12)); // NOI18N
         contatos.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = {"a"};
             public int getSize() { return strings.length; }
             public String getElementAt(int i) { return strings[i]; }
         });
+        contatos.setSelectionBackground(new java.awt.Color(227, 253, 253));
         contatos.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 contatosMouseClicked(evt);
@@ -424,10 +436,13 @@ public class Home extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(contatos);
 
-        jButton1.setText("Adicionar novo Contato");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnCriaCadastro.setBackground(new java.awt.Color(113, 201, 206));
+        btnCriaCadastro.setFont(new java.awt.Font("Microsoft YaHei", 0, 12)); // NOI18N
+        btnCriaCadastro.setForeground(new java.awt.Color(255, 255, 255));
+        btnCriaCadastro.setText("Adicionar novo Contato");
+        btnCriaCadastro.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnCriaCadastroActionPerformed(evt);
             }
         });
 
@@ -436,24 +451,28 @@ public class Home extends javax.swing.JFrame {
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(125, 125, 125)
-                .addComponent(jButton1)
-                .addContainerGap(125, Short.MAX_VALUE))
+                .addGap(119, 119, 119)
+                .addComponent(btnCriaCadastro)
+                .addContainerGap(120, Short.MAX_VALUE))
             .addComponent(jScrollPane1)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 447, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton1)
-                .addGap(19, 19, 19))
+                .addComponent(btnCriaCadastro, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         jTabbedPane2.addTab("", jPanel3);
 
         Lista.addTab("Contatos", jTabbedPane2);
 
+        jPanel2.setBackground(new java.awt.Color(203, 241, 245));
+
+        grupos.setBackground(new java.awt.Color(227, 253, 253));
+        grupos.setFont(new java.awt.Font("Microsoft YaHei", 0, 12)); // NOI18N
         grupos.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = {" "};
             public int getSize() { return strings.length; }
@@ -466,10 +485,13 @@ public class Home extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(grupos);
 
-        jButton3.setText("Criar Grupo");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        btnCriaGrupo.setBackground(new java.awt.Color(113, 201, 206));
+        btnCriaGrupo.setFont(new java.awt.Font("Microsoft YaHei", 0, 12)); // NOI18N
+        btnCriaGrupo.setForeground(new java.awt.Color(255, 255, 255));
+        btnCriaGrupo.setText("Criar Grupo");
+        btnCriaGrupo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                btnCriaGrupoActionPerformed(evt);
             }
         });
 
@@ -477,18 +499,18 @@ public class Home extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 407, Short.MAX_VALUE)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(148, 148, 148)
-                .addComponent(jButton3)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(btnCriaGrupo)
+                .addContainerGap(160, Short.MAX_VALUE))
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 442, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
-                .addComponent(jButton3)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 448, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnCriaGrupo, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -496,10 +518,12 @@ public class Home extends javax.swing.JFrame {
 
         Lista.addTab("Grupos", jTabbedPane3);
 
-        jButton4.setText("Sair");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        btnSair.setBackground(new java.awt.Color(113, 201, 206));
+        btnSair.setForeground(new java.awt.Color(255, 255, 255));
+        btnSair.setText("Sair");
+        btnSair.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                btnSairActionPerformed(evt);
             }
         });
 
@@ -511,51 +535,51 @@ public class Home extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(30, 30, 30)
+                .addGap(22, 22, 22)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(Calendario, javax.swing.GroupLayout.PREFERRED_SIZE, 750, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
+                        .addComponent(Calendario, javax.swing.GroupLayout.DEFAULT_SIZE, 750, Short.MAX_VALUE)
+                        .addGap(22, 22, 22)
                         .addComponent(Lista, javax.swing.GroupLayout.PREFERRED_SIZE, 407, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(30, Short.MAX_VALUE))
+                        .addContainerGap(26, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(labelHello, javax.swing.GroupLayout.PREFERRED_SIZE, 535, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton4)
-                        .addGap(18, 18, 18)
                         .addComponent(iconPhoto, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(44, 44, 44))))
+                        .addGap(36, 36, 36)
+                        .addComponent(btnSair)
+                        .addGap(14, 14, 14))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(14, 14, 14)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(labelHello, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(iconPhoto, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(labelHello, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButton4)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(Calendario, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(51, 51, 51))
-                    .addComponent(Lista, javax.swing.GroupLayout.PREFERRED_SIZE, 567, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(37, 37, 37))
+                    .addComponent(btnSair))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(Calendario, javax.swing.GroupLayout.DEFAULT_SIZE, 583, Short.MAX_VALUE)
+                        .addGap(14, 14, 14))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(Lista, javax.swing.GroupLayout.PREFERRED_SIZE, 567, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btnCriaCadastroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCriaCadastroActionPerformed
         this.setVisible(false);
         new AddContato(usuario).setVisible(true);
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_btnCriaCadastroActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void btnCriaGrupoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCriaGrupoActionPerformed
         this.setVisible(false);
         new AddGrupo(usuario).setVisible(true);
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }//GEN-LAST:event_btnCriaGrupoActionPerformed
 
     private void contatosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_contatosMouseClicked
         if( contatos.getSelectedIndex() >= 0) {
@@ -567,7 +591,7 @@ public class Home extends javax.swing.JFrame {
      
     }//GEN-LAST:event_contatosMouseClicked
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+    private void btnSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSairActionPerformed
         
         int dialogResult = JOptionPane.showConfirmDialog(this, "Desabilitar Login Automático?", "Fazer Logoff", JOptionPane.YES_NO_OPTION);
        
@@ -578,11 +602,8 @@ public class Home extends javax.swing.JFrame {
             this.setVisible(false);     
             
             JOptionPane.showConfirmDialog(this, "Próximo login, a conta não será lembrada", "Avisso", JOptionPane.OK_OPTION);
-        }          
-        
-           
-         //login.rememberMe();             
-    }//GEN-LAST:event_jButton4ActionPerformed
+        }                             
+    }//GEN-LAST:event_btnSairActionPerformed
 
     private void compromissosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_compromissosMouseClicked
         if( compromissos.getSelectedIndex() >= 0) {
@@ -613,9 +634,6 @@ public class Home extends javax.swing.JFrame {
     
     
 
-
-    
-    
     /**
      * @param args the command line arguments
      */
@@ -655,13 +673,13 @@ public class Home extends javax.swing.JFrame {
     private com.toedter.calendar.JCalendar Calendario;
     private javax.swing.JPanel JPanelLista;
     private javax.swing.JTabbedPane Lista;
+    private javax.swing.JButton btnCriaCadastro;
+    private javax.swing.JButton btnCriaGrupo;
+    private javax.swing.JButton btnSair;
     private javax.swing.JList<String> compromissos;
     private javax.swing.JList<String> contatos;
     private javax.swing.JList<String> grupos;
     private javax.swing.JLabel iconPhoto;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
     private javax.swing.JList<String> jList1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
